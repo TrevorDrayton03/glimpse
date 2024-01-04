@@ -34,7 +34,7 @@ create a UserImage model for images
 
     class UserImage(models.Model):
         user = models.ForeignKey(User, on_delete=models.CASCADE)
-        image = models.ImageField(upload_to='user_images/')
+        image = models.ImageField(upload_to='user_images/') # this requires pillows to be installed
 
 ######### URLS ############
 add to urls.py
