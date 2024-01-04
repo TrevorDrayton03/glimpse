@@ -1,0 +1,4 @@
+install python 3 stable release for your OS
+pip install django
+pip install htmx
+django-admin startproject capstone_UI
