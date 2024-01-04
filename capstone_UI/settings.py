@@ -37,7 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'capstone_UI_app'
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/profile/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
