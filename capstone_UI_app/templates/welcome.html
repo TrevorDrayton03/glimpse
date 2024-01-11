@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "GLiMPSE" }}{% endblock %}
+
+{% block content %}
+<div>
+  <h2>Welcome!</h2>
+  <p>
+    GLiMPSE is designed exclusively for healthcare professionals to detect signs of glaucoma from fundus images.
+  </p>
+  <div class="button-container">
+    <button class="button" id="loginButton">Sign In</button>
+    <button class="button" id="contactButton">Contact Us</button>
+  </div>
+</div>
+
+{% block javascript %}
+<script>
+  document.getElementById("loginButton").addEventListener("click", function() {
+      window.location.href = "/login/";
+  });
+  document.getElementById("contactButton").addEventListener("click", function() {
+      window.location.href = "/contact/";
+  });
+</script>
+{% endblock %}
+{% endblock %}
+

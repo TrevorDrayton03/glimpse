@@ -1,0 +1,32 @@
+.top-navbar {
+  background-color: #fff;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.top-navbar a {
+  color: #333;
+  text-align: center;
+  padding: 10px 12px;
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.button-container {
+  display: flex;
+}
+
+.button {
+  margin-right: 10px;
+}
+
+body {
+  min-height: 95vh;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  margin-top: auto;
+  text-align: center;
+}

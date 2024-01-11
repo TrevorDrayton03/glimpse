@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "GLiMPSE - Login" }}{% endblock %}
+
+{% block content %}
+<div class="button-container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+        <button class="button" id="cancelButton" onclick="location.href='/'">Cancel</button>
+    </form>
+</div>
+{% endblock %}

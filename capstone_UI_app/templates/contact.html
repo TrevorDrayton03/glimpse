@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "GLiMPSE - Contact Us" }}{% endblock %}
+
+{% block content %}
+<h2>Contact Page</h2>
+<div class="button-container">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+    <button type="button" onclick="location.href='/'">Cancel</button>
+  </form>
+</div>
+{% endblock %}

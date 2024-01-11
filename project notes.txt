@@ -1,14 +1,12 @@
 install python 3 stable release for your OS
 
-pip install django
-
-pip install htmx
+pip install django htmx.org
 
 django-admin startproject capstone_UI
 
 if the application was not created in the project, use python manage.py startapp capstone_UI_app to create it 
 
-python manage.py runserver -> to start
+python manage.py runserver
 
 include HTMX into the HTML Templates <head>
     <!-- Include HTMX JavaScript -->
@@ -25,7 +23,12 @@ include the following code in settings.py
 
     LOGIN_URL = '/login/'
 
-    LOGIN_REDIRECT_URL = '/profile/'
+    LOGIN_REDIRECT_URL = '/home/'
+
+    in models:
+    class UserProfile(AbstractUser):
+        def __str__(self):
+            return self.username
 
 ########## IMAGE UPLOADING ##########
 create a UserImage model for images
@@ -36,10 +39,13 @@ create a UserImage model for images
         user = models.ForeignKey(User, on_delete=models.CASCADE)
         image = models.ImageField(upload_to='user_images/') # this requires pillows to be installed
 
-######### URLS ############
+########## URLS ##########
 add to urls.py
     from capstone_UI_app import views
     urlpatterns = [
         path('', views.home_view, name='home')
     ]
 
+########## DJANGO ADMINISTRATION ########## 
+
+python manage.py createsuperuser

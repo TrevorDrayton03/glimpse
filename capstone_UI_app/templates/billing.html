@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Billing Contact Form</h2>
+<div class="button-container">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+    <button type="button" onclick="location.href='/thankyou'">Cancel</button>
+  </form>
+</div>
+{% endblock %}

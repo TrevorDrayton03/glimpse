@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}GLiMPSE{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    {% load static %}
+      <script src="https://cdn.jsdelivr.net/npm/htmx.org@latest/dist/htmx.js"></script>
+     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+    <header>
+        <h1><a href="/" style="text-decoration: none; color: inherit;">GLiMPSE</a></h1>
+    </header>
+    <main>
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <footer>
+        2024 GLiMPSE
+    </footer>
+</body>
+</html>
