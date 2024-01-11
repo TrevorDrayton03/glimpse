@@ -1,0 +1,12 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+    <button type="button" onclick="location.href='/dashboard/'">Cancel</button>
+  </form>
+</div>
+{% endblock %}

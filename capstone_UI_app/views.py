@@ -3,7 +3,8 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .forms import ContactForm, BillingForm
+from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
+from .models import Image
 
 def welcome_view(request):
     return render(request, 'welcome.html')
@@ -32,6 +33,15 @@ def billing_view(request):
         form = BillingForm()
 
     return render(request, 'contact.html', {'form': form})
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            return redirect('login')
+    else:
+        form = RegisterForm()
+    return render(request, 'register.html', {'form': form})
 
 def thankyou_view(request):
     return render(request, 'thankyou.html')
@@ -63,3 +73,16 @@ def login_view(request):
 class custom_login_view(LoginView):
     template_name = 'login.html' 
     redirect_authenticated_user = True # defined in settings.py as LOGIN_REDIRECT_URL
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_image = Image(image=request.FILES['image'])
+            new_image.save()
+            # Redirect to a success page
+            # return redirect('success_url')
+    else:
+        form = ImageUploadForm()
+
+    return render(request, 'upload_image.html', {'form': form})

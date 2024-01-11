@@ -15,3 +15,13 @@ class BillingForm(forms.Form):
     billing_city = forms.CharField(label='Billing City', max_length=50)
     billing_province_or_territory = forms.CharField(label='Billing Province/Territory', max_length=50)
     billing_postal_code = forms.CharField(label='Billing Postal Code', max_length=10)
+
+class RegisterForm(forms.Form):
+    username = forms.CharField(label='Username', max_length=100)
+    password = forms.CharField(label='Password', max_length=100)
+    email = forms.EmailField(label='Email')
+    first_name = forms.CharField(label='First Name', max_length=100)
+    last_name = forms.CharField(label='Last Name', max_length=100)
+
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField()

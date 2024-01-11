@@ -49,3 +49,7 @@ add to urls.py
 ########## DJANGO ADMINISTRATION ########## 
 
 python manage.py createsuperuser
+
+########## DB TABLES ##########
+python manage.py makemigrations
+python manage.py migrate

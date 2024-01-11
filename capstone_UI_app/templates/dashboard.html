@@ -7,8 +7,8 @@
   <h2>Dashboard</h2>
   <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
+    <button type="button" onclick="event.preventDefault(); location.href='/dashboard/upload/';">Upload Image</button>
     <button type="submit">Logout</button>
-    
   </form>
 </div>
 {% endblock %}
