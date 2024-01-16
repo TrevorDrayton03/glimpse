@@ -1,0 +1,15 @@
+<div id="main">
+  <h2>Welcome!</h2>
+  <p>
+    GLiMPSE is designed exclusively for healthcare professionals to detect signs of glaucoma from fundus images.
+  </p>
+  <div id="content">
+    <div class="button-container">
+      <!-- <button class="button" onclick="location.href='/login/'">Sign In</button>
+      <button class="button" onclick="location.href='/contact/'">Contact Us</button> -->
+      <button class="button" hx-get="/login/" hx-swap="outerHTML" hx-trigger="click" hx-target="#main">Sign In</button>
+      <button class="button" hx-get="/contact/" hx-swap="outerHTML" hx-trigger="click" hx-target="#main">Contact
+        Us</button>
+    </div>
+  </div>
+</div>

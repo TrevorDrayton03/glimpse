@@ -13,7 +13,7 @@
             {{ form.as_p }}
             <button type="submit">Login</button>
             <button hx-get="/register/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Register</button>
-            <button hx-get="/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
+            <button hx-get="/?ajax=1" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
         </form>
     </div>
 </div>

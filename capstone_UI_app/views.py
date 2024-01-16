@@ -7,7 +7,11 @@ from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import Image
 
 def main_view(request):
-    return render(request, 'main.html')
+    if request.GET.get('ajax') == '1':
+        # If it's an AJAX request, return the AJAX template
+        return render(request, 'ajax_main.html')
+    else:
+        return render(request, 'main.html')
 
 def contact_view(request):
     if request.method == 'POST':
