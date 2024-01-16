@@ -6,8 +6,8 @@ from django.http import JsonResponse
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import Image
 
-def welcome_view(request):
-    return render(request, 'welcome.html')
+def main_view(request):
+    return render(request, 'main.html')
 
 def contact_view(request):
     if request.method == 'POST':

@@ -1,15 +1,19 @@
-{% extends "base.html" %}
-
-{% block title %}{{ "GLiMPSE - Login" }}{% endblock %}
-
-{% block content %}
-<div class="button-container">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-        <button onclick="location.href='/register/'">Register</button>
-        <button onclick="location.href='/'">Cancel</button>
-    </form>
+<div id="content">
+    <h2>Sign In</h2>
+    <div class="button-container">
+        <!-- <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+            <button onclick="location.href='/register/'">Register</button>
+            <button onclick="location.href='/'">Cancel</button>
+        </form> -->
+        <form id="login-form" hx-post="{% url 'login' %}" hx-swap="outerHTML" hx-target="#content">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+            <button hx-get="/register/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Register</button>
+            <button hx-get="/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
+        </form>
+    </div>
 </div>
-{% endblock %}
