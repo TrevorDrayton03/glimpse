@@ -1,8 +1,8 @@
-<div>
+<div id="content">
   <h2>Dashboard</h2>
   <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
-    <button type="button" onclick="event.preventDefault(); location.href='/dashboard/upload/';">Upload Image</button>
+    <button type="button" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click">Upload Images</button>
     <button type="submit">Logout</button>
   </form>
 </div>

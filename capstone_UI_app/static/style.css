@@ -20,6 +20,17 @@
   margin-right: 10px;
 }
 
+.image-container {
+  max-width: 400px;
+  overflow: hidden; 
+}
+
+.image-container img {
+  max-width: 100%;
+  height: auto;
+  display: block; 
+}
+
 body {
   min-height: 95vh;
   display: flex;

@@ -1,10 +1,13 @@
-from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
-from .models import Image
+from .models import UploadedImage
+from io import BytesIO
+import base64 
+from django.http import HttpResponse
 
 def main_view(request):
     if request.GET.get('ajax') == '1':
@@ -78,15 +81,34 @@ class custom_login_view(LoginView):
     template_name = 'login.html' 
     redirect_authenticated_user = True # defined in settings.py as LOGIN_REDIRECT_URL
 
-def upload_image(request):
+def dashboard_upload_view(request):
+    # Retrieve all stored images
+    all_images = UploadedImage.objects.all()
+
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            new_image = Image(image=request.FILES['image'])
-            new_image.save()
-            # Redirect to a success page
-            # return redirect('success_url')
+            uploaded_image = request.FILES['image']
+            # Process and save the uploaded image as needed
+            # ...
     else:
         form = ImageUploadForm()
 
-    return render(request, 'upload_image.html', {'form': form})
+    # Pass the images to the template context
+    context = {'form': form, 'images': all_images if all_images.exists() else []}
+
+    # Render the HTML file
+    return render(request, 'dashboard_upload.html', context)
+
+def delete_image(request, image_id):
+    # Retrieve the image object based on the ID
+    image = get_object_or_404(UploadedImage, id=image_id)
+
+    # Delete the image from storage
+    image.image.delete()
+
+    # Delete the image record from the database
+    image.delete()
+
+    # Redirect back to the dashboard with images
+    return redirect('dashboard_upload')

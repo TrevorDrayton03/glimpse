@@ -1,0 +1,21 @@
+<div id="content">
+  <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-target="#image-container" hx-swap="outerHTML">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+    <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Cancel</button>
+  </form>
+  {% if images %}
+  <div id="uploaded-images-container">
+      {% for image in images %}
+      <div id="image-container">
+          <img src="{{ image.image.url }}" alt="Uploaded Image">
+          <form method="post" action="{% url 'delete_image' image.id %}">
+              {% csrf_token %}
+              <button type="submit">Delete</button>
+          </form>
+      </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+</div>
