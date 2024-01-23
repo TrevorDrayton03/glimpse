@@ -8,7 +8,6 @@
 - upload with message confirmation 3.24
 - move front end and back end tool analysis in the report
 - do i need to use an apache server at the end of the day or can i use the django default server?
-- change 2.5 security considerations in the report   
 ####################
 
 install python 3 stable release for your OS
