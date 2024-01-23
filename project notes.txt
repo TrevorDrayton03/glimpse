@@ -69,3 +69,16 @@ python manage.py migrate
 
 ########## STATIC FILES FOR PRODUCTION ##########
 python manage.py collectstatic
+
+###### QUERY DB ######
+python manage.py shell
+
+from your_app.models import UploadedImage
+UploadedImage.objects.all()
+
+###### REGISTER MODEL TO ADMIN SITE ######
+// admin.py
+from django.contrib import admin
+from .models import UploadedImage
+
+admin.site.register(UploadedImage)
