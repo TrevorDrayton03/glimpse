@@ -16,4 +16,9 @@ urlpatterns = [
     path('thankyou/', views.thankyou_view, name='thankyou'),
     path('dashboard/upload/', views.dashboard_upload_view, name='dashboard_upload'),
     path('delete_image/<int:image_id>/', views.delete_image, name='delete_image')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+ # This ensures that during development, the Django development server serves media files. 
+ # In a production environment, you would typically configure your web server to serve media files.

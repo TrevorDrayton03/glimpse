@@ -31,6 +31,30 @@
   display: block; 
 }
 
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px); 
+  grid-gap: 25px; 
+}
+
+.grid-item {
+  width: auto; 
+  height: auto; 
+  position: relative;
+  overflow: hidden; 
+}
+
+.grid-item img {
+  float: left;
+  width:  200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+.grid-item button {
+  width: 70px; 
+}
+
 body {
   min-height: 95vh;
   display: flex;

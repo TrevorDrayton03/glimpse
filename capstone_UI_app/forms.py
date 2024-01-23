@@ -26,12 +26,13 @@ class RegisterForm(forms.Form):
     last_name = forms.CharField(label='Last Name', max_length=100)
 
 class ImageUploadForm(forms.Form):
-    image = forms.ImageField(validators=[
+   # image = forms.ImageField(validators=[
         # Validate file size (e.g., 2 MB)
         #forms.FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
         #forms.FileSizeValidator(max_size=2 * 1024 * 1024),  # 2 MB
 
         # Validate image dimensions (e.g., 800x600 pixels)
        # forms.ImageField(width_field=800, height_field=600),
-        forms.ImageField()
-    ])
+        #forms.ImageField()
+    #])
+    image = forms.ImageField()

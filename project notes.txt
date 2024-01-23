@@ -53,3 +53,6 @@ python manage.py createsuperuser
 ########## DB TABLES ##########
 python manage.py makemigrations
 python manage.py migrate
+
+########## STATIC FILES FOR PRODUCTION ##########
+python manage.py collectstatic

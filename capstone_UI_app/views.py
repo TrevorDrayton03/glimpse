@@ -2,12 +2,8 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage
-from io import BytesIO
-import base64 
-from django.http import HttpResponse
 
 def main_view(request):
     if request.GET.get('ajax') == '1':
@@ -82,33 +78,36 @@ class custom_login_view(LoginView):
     redirect_authenticated_user = True # defined in settings.py as LOGIN_REDIRECT_URL
 
 def dashboard_upload_view(request):
-    # Retrieve all stored images
     all_images = UploadedImage.objects.all()
 
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             uploaded_image = request.FILES['image']
-            # Process and save the uploaded image as needed
-            # ...
+            new_image = UploadedImage(image=uploaded_image)
+            new_image.save()
     else:
         form = ImageUploadForm()
 
-    # Pass the images to the template context
     context = {'form': form, 'images': all_images if all_images.exists() else []}
 
-    # Render the HTML file
     return render(request, 'dashboard_upload.html', context)
 
 def delete_image(request, image_id):
-    # Retrieve the image object based on the ID
     image = get_object_or_404(UploadedImage, id=image_id)
+    # Check if the request method is POST (only allow POST requests for deletion)
+    if request.method == 'POST':
+        # Delete the image from storage
+        image.image.delete()
 
-    # Delete the image from storage
-    image.image.delete()
+        # Delete the image record from the database
+        image.delete()
 
-    # Delete the image record from the database
-    image.delete()
+    all_images = UploadedImage.objects.all()
+
+    form = ImageUploadForm()
+
+    context = {'form': form, 'images': all_images if all_images.exists() else []}
 
     # Redirect back to the dashboard with images
-    return redirect('dashboard_upload')
+    return render(request, 'dashboard_upload.html', context)
