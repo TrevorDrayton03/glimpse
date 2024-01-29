@@ -1,13 +1,12 @@
 ####### TODO #######
 - edit each image (jan 15th code) as part of uploading 
 - user input for left eye, right eye, cup ratio as part of uploading
-- researh temporary storage / storage constraints and implement
 - GOPRO API https://github.com/KonradIT/goprowifihack?tab=readme-ov-file
 - deployment onto a container which will go onto brendan's commputer
 - temporary storage
 - upload with message confirmation 3.24
-- move front end and back end tool analysis in the report
 - do i need to use an apache server at the end of the day or can i use the django default server?
+- register functionality does not work
 ####################
 
 install python 3 stable release for your OS

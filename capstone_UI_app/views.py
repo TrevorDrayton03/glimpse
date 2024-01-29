@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage
+from django.contrib import messages
 
 def main_view(request):
     if request.GET.get('ajax') == '1':
@@ -42,7 +43,11 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            return redirect('login')
+            form.save()
+            messages.success(request, 'Registration successful. You can now log in.')
+            # return redirect('login')
+        else:
+            messages.error(request, 'Registration failed. Please correct the errors below.')
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
