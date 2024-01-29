@@ -1,4 +1,5 @@
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -49,9 +50,11 @@ def register_view(request):
 def thankyou_view(request):
     return render(request, 'thankyou.html')
 
+@login_required(login_url='/')
 def dashboard_view(request):
     return render(request, 'dashboard.html')
 
+@login_required(login_url='/')
 def custom_logout_view(request):
     logout(request)
     return redirect('/')
@@ -77,6 +80,7 @@ class custom_login_view(LoginView):
     template_name = 'login.html' 
     redirect_authenticated_user = True # defined in settings.py as LOGIN_REDIRECT_URL
 
+@login_required(login_url='/')
 def dashboard_upload_view(request):
     all_images = UploadedImage.objects.all()
 
@@ -93,6 +97,7 @@ def dashboard_upload_view(request):
 
     return render(request, 'dashboard_upload.html', context)
 
+@login_required(login_url='/')
 def delete_image(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
     # Check if the request method is POST (only allow POST requests for deletion)
