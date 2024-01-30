@@ -11,7 +11,7 @@
 
 install python 3 stable release for your OS
 
-pip install django htmx.org
+pip install django htmx.org libapache2-mod-wsgi-py3
 
 django-admin startproject capstone_UI
 
@@ -80,3 +80,7 @@ from django.contrib import admin
 from .models import UploadedImage
 
 admin.site.register(UploadedImage)
+
+############
+pip freeze > requirements.txt
+docker-compose up --build
