@@ -81,6 +81,27 @@ from .models import UploadedImage
 
 admin.site.register(UploadedImage)
 
-############
+############ docker related commands
 pip freeze > requirements.txt
 docker-compose up --build
+
+############ laptop create docker serve app using development server in container
+docker run -it --rm python:3.11 /bin/sh
+
+// laptop, creating the container for use
+docker cp /path/to/host/directory my_container:/path/inside/container/
+docker cp C:\Users\trevd\OneDrive\Documents\capstone_UI 825a9b374d8a:/var/www/html/capstone
+cd /var/www/html/capstone/
+pip install -r requirements.txt
+docker commit 825a9b374d8a python:django-container
+
+// running and using the container
+docker run -it --rm -d -p 8000:8000 python:django-container
+docker exec -it 9c40f60de9ed /bin/bash
+python manage.py runserver 0.0.0.0:8000
+
+############ production server docker setup with gunicorn
+
+// add -D at end to make it a background process
+gunicorn your_project.wsgi:application -c gunicorn_config.py
+
