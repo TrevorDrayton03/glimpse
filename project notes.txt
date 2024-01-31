@@ -85,6 +85,14 @@ admin.site.register(UploadedImage)
 pip freeze > requirements.txt
 docker-compose up --build
 
+########## github container registry commands
+docker login --username trevordrayton03 --password secret_token ghcr.io
+docker tag python:django-container ghcr.io/trevordrayton03/capstone_ui:django-container
+docker push ghcr.io/trevordrayton03/capstone_ui:django-container
+docker image ls
+docker image rm first_3_digits_of_image --force
+docker run -it --rm ghcr.io/trevordrayton03/capstone_ui:django-container /bin/bash
+
 ############ laptop create docker serve app using development server in container
 docker run -it --rm python:3.11 /bin/sh
 
