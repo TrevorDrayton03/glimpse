@@ -1,3 +1,6 @@
+cd /var/www/html/capstone
+gunicorn -b 0.0.0.0:8000 capstone_UI.wsgi:application
+
 ####### TODO #######
 - edit each image (jan 15th code) as part of uploading 
 - user input for left eye, right eye, cup ratio as part of uploading

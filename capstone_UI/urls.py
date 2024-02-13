@@ -20,5 +20,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
- # This ensures that during development, the Django development server serves media files. 
- # In a production environment, you would typically configure your web server to serve media files.
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
