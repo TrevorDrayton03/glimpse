@@ -43,3 +43,7 @@ class ImageUploadForm(forms.Form):
         #forms.ImageField()
     #])
     image = forms.ImageField()
+
+
+class ImagePreProcessForm(forms.Form):
+    image = forms.ImageField()

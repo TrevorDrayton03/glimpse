@@ -121,3 +121,7 @@ def delete_image(request, image_id):
 
     # Redirect back to the dashboard with images
     return render(request, 'dashboard_upload.html', context)
+
+@login_required(login_url='/')
+def preprocess_view(request, image_id):
+    image = get_object_or_404(UploadedImage, id=image_id)

@@ -15,7 +15,8 @@ urlpatterns = [
     path('billing/', views.billing_view, name='billing'),
     path('thankyou/', views.thankyou_view, name='thankyou'),
     path('dashboard/upload/', views.dashboard_upload_view, name='dashboard_upload'),
-    path('delete_image/<int:image_id>/', views.delete_image, name='delete_image')
+    path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
+    path('preprocess/',views.preprocess_view, name="preprocessimage")
 ]
 
 if settings.DEBUG:
