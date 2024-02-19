@@ -1,0 +1,218 @@
+<style>
+    body {
+        text-align: center;
+    }
+
+    h1 {
+        text-decoration: underline;
+    }
+
+    h2 {
+        font-size: 20px;
+        text-decoration: underline;
+        padding-bottom: 5px;
+    }
+
+    h3 {
+        font-size: 15px;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .leftside {
+        flex: 4;
+        display: flex;
+        justify-content: center;
+    }
+
+    .rightside {
+        flex: 6;
+        display: flex;
+        justify-content: center;
+        padding-left: 20px;
+    }
+
+    .edited-container {
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+    }
+
+    .bottom-container {
+        margin-top: 20px;
+    }
+
+    .image-title {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+    }
+
+    .preprocess {
+        margin-right: 20px;
+    }
+
+    .original-image {
+        width: 15%;
+        padding-top: 10px;
+        padding-right: 10px;
+    }
+
+    .edited-image {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    button {
+        font-size: 20px;
+    }
+
+    button:hover {
+        cursor: pointer;
+    }
+
+    .settings {
+        flex: 0 0 750px;
+        margin-top: 20px;
+    }
+
+    .contrast-enhance {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 2px solid black;
+        padding-bottom: 10px;
+    }
+
+    .channel-separation {
+        border-bottom: 2px solid black;
+        padding-bottom: 10px;
+    }
+
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 18px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+        padding: 5px;
+        margin-right: 5px;
+        margin-left: 15px;
+    }
+
+    input[type="range"] {
+        width: 250px;
+        height: 20px;
+        margin-bottom: 10px;
+    }
+
+    .image-color {
+        border-bottom: 2px solid black;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+
+    .revert-button {
+        padding-right: 20px;
+        margin-top: 10px;
+        font-size: 25px;
+    }
+
+    .submit-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        font-size: 25px;
+    }
+
+    .back-button {
+        position: absolute;
+        bottom: 20px;
+        right: 100px;
+        font-size: 25px;
+    }
+
+    .separation-button {
+        margin: 5px;
+    }
+</style>
+
+<body>
+    <h1>Pre-Processing</h1>
+    <p id="file-name">File Name</p>
+    <div class="container">
+        <div class="leftside">
+            <div class="preprocess">
+                <div class="edited-container">
+                    <h3>Pre-processed Fundus Image</h3>
+                    <img class="edited-image" src="original.jpg">
+                </div>
+                <div class="bottom-container">
+                    <h3>Original Fundus Image</h3>
+                    <img class="original-image" src="original.jpg">
+                    <button class="revert-button">Revert Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="rightside">
+            <div class="settings">
+                <div class="image-color">
+                    <button class="settings-button">RGB</button>
+                    <button class="settings-button">Grayscale</button>
+                    <button class="settings-button">Lab Color</button>
+                </div>
+                <div class="contrast-enhance">
+                    <h2>Contract Enhancement</h2>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="HE">
+                        <label for="HE">Histogram Equalization</label>
+                        <input type="checkbox" id="CS">
+                        <label for="CS">Contrast Stretching</label>
+                        <input type="checkbox" id="GC">
+                        <label for="GC">Gamma Correction</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="AHE">
+                        <label for="HE">Adaptive Histogram Equalization</label>
+                        <input type="checkbox" id="SC">
+                        <label for="SC">Sigmoid Correction</label>
+                        <input type="checkbox" id="LHE">
+                        <label for="LHE">Local Histogram Equalization</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="PLCS">
+                        <label for="PLCS">Piecewise Linear Contrast Stretching</label>
+                    </div>
+                </div>
+                <div class="channel-separation">
+                    <h2>Color Channel Separation</h2>
+                    <button class="separation-button">Red</button>
+                    <button class="separation-button">Green</button>
+                    <button class="separation-button">Blue</button>
+                </div>
+                <div class="image-adjustment">
+                    <h2>Image Adjustment</h2>
+                    <label for="brightness">Brightness:</label>
+                    <input type="range" id="brightness" name="brightness" min="0" max="100" value="50">
+                    <br />
+                    <label for="saturation">Saturation:</label>
+                    <input type="range" id="saturation" name="saturation" min="0" max="100" value="50">
+                    <br />
+                    <label for="sharpness">Sharpness:</label>
+                    <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50">
+
+                </div>
+            </div>
+            <button class="back-button">Back</button>
+            <button class="submit-button">Next</button>
+        </div>
+    </div>
+    </div>
+</body>

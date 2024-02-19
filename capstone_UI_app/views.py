@@ -125,3 +125,4 @@ def delete_image(request, image_id):
 @login_required(login_url='/')
 def preprocess_view(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
+    return render(request, 'preprocess.html', image)
