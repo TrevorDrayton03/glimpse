@@ -103,6 +103,23 @@ def dashboard_upload_view(request):
     return render(request, 'dashboard_upload.html', context)
 
 @login_required(login_url='/')
+def dashboard_upload_edit_view(request):
+    all_images = UploadedImage.objects.all()
+
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_image = request.FILES['image']
+            new_image = UploadedImage(image=uploaded_image)
+            new_image.save()
+    else:
+        form = ImageUploadForm()
+
+    context = {'form': form, 'images': all_images if all_images.exists() else []}
+
+    return render(request, 'dashboard_upload_edit.html', context)
+
+@login_required(login_url='/')
 def delete_image(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
     # Check if the request method is POST (only allow POST requests for deletion)
