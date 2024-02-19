@@ -126,15 +126,22 @@
 
     .submit-button {
         position: absolute;
-        bottom: 20px;
+        bottom: 150px;
         right: 20px;
         font-size: 25px;
     }
 
     .back-button {
         position: absolute;
-        bottom: 20px;
+        bottom: 150px;
         right: 100px;
+        font-size: 25px;
+    }
+
+    .send-button {
+        position: absolute;
+        bottom: 50px;
+        right: 20px;
         font-size: 25px;
     }
 
@@ -207,12 +214,22 @@
                     <br />
                     <label for="sharpness">Sharpness:</label>
                     <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50">
-
                 </div>
             </div>
-            <button class="back-button">Back</button>
-            <button class="submit-button">Next</button>
         </div>
     </div>
-    </div>
+    <button>Back</button>
+    <button>Next</button>
+    <button 
+        style="background-color: rgb(169, 255, 169);" 
+        type="button" 
+        hx-get="/review" 
+        hx-trigger="click" 
+        hx-swap="outerHTML" 
+        hx-target="#content"
+        >
+        Send
+    </button>
 </div>
+
+

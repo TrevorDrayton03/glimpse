@@ -143,5 +143,10 @@ def delete_image(request, image_id):
 def preprocess_view(request):
     all_images = UploadedImage.objects.all()
     context = {'images': all_images}
-    print(all_images)
     return render(request, 'preprocess.html', context)
+
+@login_required(login_url='/')
+def review_view(request):
+    all_images = UploadedImage.objects.all()
+    context = {'images': all_images}
+    return render(request, 'review.html', context)
