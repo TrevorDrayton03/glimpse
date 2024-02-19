@@ -15,7 +15,7 @@ urlpatterns = [
     path('billing/', views.billing_view, name='billing'),
     path('thankyou/', views.thankyou_view, name='thankyou'),
     path('dashboard/upload/', views.dashboard_upload_view, name='dashboard_upload'),
-    path('dashboard/upload/edit', views.dashboard_upload_edit_view, name='dashboard_upload_edit'),
+    # path('dashboard/upload/edit', views.dashboard_upload_edit_view, name='dashboard_upload_edit'),
     path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
     path('preprocess/',views.preprocess_view, name="preprocess")
 ]

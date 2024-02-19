@@ -18,7 +18,16 @@
     {% endfor %}
   </div>  
   <div style="margin-top: 20px;">
-    <button style="background-color: rgb(169, 255, 169);" type="button" hx-get="/dashboard/upload/edit" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Confirm</button>
+    <button
+      style="background-color: rgb(169, 255, 169);" 
+      type="button" 
+      hx-get="/preprocess" 
+      hx-trigger="click" 
+      hx-swap="outerHTML" 
+      hx-target="#content"
+      >
+      Confirm
+    </button>
   </div>
   {% endif %}
 </div>

@@ -140,6 +140,8 @@ def delete_image(request, image_id):
     return render(request, 'dashboard_upload.html', context)
 
 @login_required(login_url='/')
-def preprocess_view(request, image_id):
-    image = get_object_or_404(UploadedImage, id=image_id)
-    return render(request, 'preprocess.html', image)
+def preprocess_view(request):
+    all_images = UploadedImage.objects.all()
+    context = {'images': all_images}
+    print(all_images)
+    return render(request, 'preprocess.html', context)

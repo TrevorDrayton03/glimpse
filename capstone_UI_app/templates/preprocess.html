@@ -143,7 +143,7 @@
     }
 </style>
 
-<body>
+<div id="content">
     <h1>Pre-Processing</h1>
     <p id="file-name">File Name</p>
     <div class="container">
@@ -151,11 +151,11 @@
             <div class="preprocess">
                 <div class="edited-container">
                     <h3>Pre-processed Fundus Image</h3>
-                    <img class="edited-image" src="original.jpg">
+                    <img class="edited-image" src="{{ images.0.image.url }}">
                 </div>
                 <div class="bottom-container">
                     <h3>Original Fundus Image</h3>
-                    <img class="original-image" src="original.jpg">
+                    <img class="original-image" src="{{ images.0.image.url }}">
                     <button class="revert-button">Revert Changes</button>
                 </div>
             </div>
@@ -215,4 +215,4 @@
         </div>
     </div>
     </div>
-</body>
+</div>
