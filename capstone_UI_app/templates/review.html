@@ -1,65 +1,62 @@
 <style>
-  .image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+  table {
+    width: 90%;
+    border-collapse: collapse;
+    text-align: center;
+    table-layout: fixed;
   }
-  .grid-item {
-    width: calc(50% - 10px); /* Adjust width for two columns, accounting for some margin */
-    margin-bottom: 20px; /* Space between items */
+  th, td {
+    padding: 20px;
+    border: none;
   }
-  .double-column-container {
-    display: flex;
-    justify-content: space-between;
+  .remove-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
   }
-  .column {
-    flex: 1;
-    margin-right: 20px; /* Space between the two columns */
+  
+  img {
+    width: auto; 
+    height: 150px; 
+    max-width: none; 
   }
-  .column:last-child {
-    margin-right: 0;
+  .filename, .action {
+    white-space: nowrap; 
+    padding: 8px 16px; 
   }
 </style>
 
 <div id="content">
-  <div class="double-column-container">
-    <!-- First Column -->
-    <div class="column">
-      <div id="uploaded-images-container" class="image-grid">
-        {% for image in images %}
-          <div id="image-container-{{ image.id }}" class="grid-item">
-            <img src="{{ image.image.url }}" alt="Uploaded Image">
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-    <!-- Second Column (Duplicate) -->
-    <div class="column">
-      <div id="uploaded-images-container-duplicate" class="image-grid">
-        {% for image in images %}
-          <div id="image-container-duplicate-{{ image.id }}" class="grid-item">
-            <img src="{{ image.image.url }}" alt="Uploaded Image">
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  
-  <div style="margin-top: 20px;">
-    <button
-      style="background-color: rgb(169, 255, 169);" 
-      type="button"
-      hx-get="/thankyou" 
-      hx-trigger="click" 
-      hx-swap="outerHTML" 
-      hx-target="#content"
-      >
-      Confirm
-    </button>
-    <button 
-      type="button" 
-      >
-    Cancel
-  </button>
+  <table>
+    <thead>
+      <tr>
+        <th>Uploaded Image</th>
+        <th>Preprocessed Image</th>
+        <th>Filename</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for image in images %}
+      <tr>
+        <td><img src="{{ image.image.url }}" alt="Uploaded Image"></td>
+        <td><img src="{{ image.image.url }}" alt="Preprocessed Image"></td>
+        <td>{{ image.image.name }}</td>
+        <td>
+          <button class="remove-btn" hx-post="{% url 'delete_image' image.id %}"
+                  hx-swap="outerHTML" hx-target="#content">
+            Delete
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <button style="background-color: rgb(169, 255, 169);" type="button">Confirm</button>
+    <button type="button">Cancel</button>
   </div>
 </div>
