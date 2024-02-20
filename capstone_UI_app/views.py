@@ -7,6 +7,16 @@ from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage
 from django.contrib import messages
 
+# python libraries for preprocessing
+import cv2
+import numpy as np
+from io import BytesIO
+from PIL import Image, ImageEnhance, ImageOps
+import base64
+from urllib.parse import urljoin
+from skimage import exposure
+
+
 def main_view(request):
     if request.GET.get('ajax') == '1':
         # If it's an AJAX request, return the AJAX template
@@ -139,9 +149,72 @@ def delete_image(request, image_id):
     # Redirect back to the dashboard with images
     return render(request, 'dashboard_upload.html', context)
 
+# shows the preprocess page
 @login_required(login_url='/')
 def preprocess_view(request):
     all_images = UploadedImage.objects.all()
     context = {'images': all_images}
-    print(all_images)
+    
     return render(request, 'preprocess.html', context)
+
+# processes the image based off of settings selection
+def process_image(request):
+    operation = request.POST.get('operation')
+    image_url = request.POST.get('image_url')
+
+    # Decode Base64 image data
+    image_bytes = base64.b64decode(image_url.split(',')[1])
+
+    # Convert image data to numpy array
+    nparr = np.frombuffer(image_bytes, np.uint8)
+
+    # Decode the image using OpenCV
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    if operation == 'grayscale':
+        processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    elif operation == 'labcolor':
+        processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    elif operation == 'rgb':
+        processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    elif operation == 'redchannel' or operation == 'bluechannel' or operation == 'greenchannel':
+        blue_channel, green_channel, red_channel = cv2.split(image)
+        if operation == 'redchannel':
+            processed_image = red_channel
+        elif operation == 'greenchannel':
+            processed_image = green_channel
+        elif operation == 'bluechannel':
+            processed_image = blue_channel
+    elif operation == 'HE':
+        processed_image = cv2.equalizeHist(image)
+    elif operation == 'CS':
+        min_val, max_val, _, _ = cv2.minMaxLoc(image)
+        processed_image = np.uint8((image - min_val) / (max_val - min_val) * 255)
+    elif operation == 'GC':
+        gamma = 1.5
+        processed_image = np.uint8(((image / 255.0) ** gamma) * 255)
+    elif operation == 'AHE':
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        processed_image = clahe.apply(image)
+    elif operation == 'SC':
+        processed_image = (sigmoid_correction(image) * 255).astype(np.uint8)
+    elif operation == 'LHE':
+        processed_image = exposure.equalize_adapthist(image, clip_limit=0.03)
+    elif operation == 'PLS':
+        min_val, max_val = 50, 200
+        processed_image = piecewise_linear(image, min_val, max_val)
+    else:
+        return JsonResponse({'error': 'Unsupported operation'})
+
+    _, buffer = cv2.imencode('.jpg', processed_image)
+    processed_image_base64 = base64.b64encode(buffer).decode()
+    return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
+
+    
+# Apply sigmoid correction
+def sigmoid_correction(image, alpha=10, beta=0.5):
+    return 1 / (1 + np.exp(-alpha * (image / 255.0 - beta)))
+
+# Apply piecewise linear contrast stretching
+def piecewise_linear(image, min_val, max_val):
+    return np.clip((image - min_val) / (max_val - min_val) * 255, 0, 255).astype(np.uint8)
