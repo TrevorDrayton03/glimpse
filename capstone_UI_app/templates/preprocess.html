@@ -79,6 +79,14 @@
         margin-top: 20px;
     }
 
+    .settings-button {
+        background-color: lightgray;
+    }
+
+    .settings-button.selected {
+        background-color: darkgray;
+    }
+
     .contrast-enhance {
         display: flex;
         flex-direction: column;
@@ -140,11 +148,15 @@
 
     .separation-button {
         margin: 5px;
+        background-color: lightgray;
+    }
+
+    .separation-button.selected {
+        background-color: darkgray;
     }
 </style>
 
 <div id="content">
-    <h1>Pre-Processing</h1>
     <p id="file-name">File Name</p>
     <div class="container">
         <div class="leftside">
@@ -157,6 +169,8 @@
                     <h3>Original Fundus Image</h3>
                     <img class="original-image" src="{{ images.0.image.url }}">
                     <button class="revert-button" onClick="revertChanges()">Revert Changes</button>
+                    <button class="saveToComputer" type="button" onClick="saveToComputer()">Save Image to
+                        Computer</button>
                 </div>
             </div>
         </div>
@@ -195,21 +209,26 @@
                 </div>
                 <div class="channel-separation">
                     <h2>Color Channel Separation</h2>
-                    <button class="separation-button" onClick="processImage('redchannel')">Red</button>
-                    <button class="separation-button" onClick="processImage('greenchannel')">Green</button>
-                    <button class="separation-button" onClick="processImage('bluechannel')">Blue</button>
+                    <button class="separation-button" id="redchannel-button" onClick="selectChannel('redchannel', 'redchannel')">Red</button>
+                    <button class="separation-button" id="greenchannel-button" onClick="selectChannel('greenchannel', 'greenchannel')">Green</button>
+                    <button class="separation-button" id="bluechannel-button" onClick="selectChannel('bluechannel', 'bluechannel')">Blue</button>
                 </div>
                 <div class="image-adjustment">
                     <h2>Image Adjustment</h2>
-                    <label for="brightness">Brightness:</label>
-                    <input type="range" id="brightness" name="brightness" min="0" max="100" value="50">
-                    <br />
-                    <label for="saturation">Saturation:</label>
-                    <input type="range" id="saturation" name="saturation" min="0" max="100" value="50">
-                    <br />
-                    <label for="sharpness">Sharpness:</label>
-                    <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50">
-
+                    <div>
+                        <label for="brightness">Brightness:</label>
+                        <input type="range" id="brightness" name="brightness" min="0" max="100" value="50"
+                            oninput="adjustImage('brightness', this.value)">
+                        <br />
+                        <label for="saturation">Saturation:</label>
+                        <input type="range" id="saturation" name="saturation" min="0" max="100" value="50"
+                            oninput="adjustImage('saturation', this.value)">
+                        <br />
+                        <label for="sharpness">Sharpness:</label>
+                        <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50"
+                            oninput="adjustImage('sharpness', this.value)">
+                    </div>
+                    <button class="save-button" onClick="saveImage()">Save Sliders</button>
                 </div>
             </div>
             <button class="back-button">Back</button>
@@ -273,29 +292,29 @@
             return cookieValue;
         }
 
-        /* replace the edited image with the original image again
-            then loop through all the checkboxes and reset the settings
-        */
-        function revertChanges() {
-            var originalSrc = document.querySelector('.original-image').src;
-            document.querySelector('.edited-image').src = originalSrc;
-            originalImageData = '';
+        function adjustImage(sliderType, sliderValue) {
+            var imageURL = originalImageData || readImageDataFromDOM();
+            var csrftoken = getCookie('csrftoken');
 
-            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = false;
-                checkbox.disabled = false;
-            })
-        }
-
-        /* disabled checkboxes once they have been selected so we don't
-            have to worry about reversing checkboxes, they can revert if they want different settings
-        */
-        function disableCheckbox(checkbox, operation) {
-            if (checkbox.checked) {
-                checkbox.disabled = true;
-                processImage(operation);
-            }
+            console.log(sliderType);
+            console.log(sliderValue);
+            $.ajax({
+                url: '/process-image/',
+                type: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    sliderType: sliderType, // Send the slider type (brightness, saturation, or sharpness)
+                    sliderValue: sliderValue, // Send the slider value
+                    image_url: imageURL
+                },
+                success: function (data) {
+                    $('.edited-image').attr('src', data.processed_image);
+                    originalImageData = data.processed_image;
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error adjusting image:', error);
+                }
+            });
         }
 
         function selectColor(operation, colorName) {
@@ -311,6 +330,61 @@
 
             // Call the processImage function with the selected operation
             processImage(operation);
+        }
+
+        function selectChannel(operation, channelName) {
+            document.querySelectorAll('.separation-button').forEach(function (button) {
+                button.classList.remove('selected');
+            });
+            document.getElementById(operation + '-button').classList.add('selected');
+            processImage(operation);
+        }
+
+
+        /* replace the edited image with the original image again
+            then loop through all the checkboxes and reset the settings
+        */
+        function revertChanges() {
+            var originalSrc = document.querySelector('.original-image').src;
+            document.querySelector('.edited-image').src = originalSrc;
+            originalImageData = '';
+
+            // Reset styles for all buttons
+            document.querySelectorAll('.settings-button').forEach(function (button) {
+                button.classList.remove('selected');
+            });
+
+            //reset all checkbox permissions
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = false;
+                checkbox.disabled = false;
+            })
+
+            // set all sliders back to middle
+            document.getElementById('brightness').value = 50;
+            document.getElementById('saturation').value = 50;
+            document.getElementById('sharpness').value = 50;
+        }
+
+        function saveToComputer() {
+            var processedImageURL = document.getElementById("image").src;
+            var downloadLink = document.createElement("a")
+            downloadLink.href = processedImageURL;
+            downloadLink.download = "processed_image.jpg"
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+        /* disabled checkboxes once they have been selected so we don't
+            have to worry about reversing checkboxes, they can revert if they want different settings
+        */
+        function disableCheckbox(checkbox, operation) {
+            if (checkbox.checked) {
+                checkbox.disabled = true;
+                processImage(operation);
+            }
         }
 
         document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
