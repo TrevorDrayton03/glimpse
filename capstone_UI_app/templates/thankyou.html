@@ -1,6 +1,44 @@
-<div id="content">
-  <h2>Thank you!</h2>
-  <p>
-    Your request has been submitted. We will contact you shortly.
-  </p>
+<style>
+  body {
+    text-align: center;
+    padding-top: 50px;
+    font-family: Arial, sans-serif;
+  }
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+  }
+  .button {
+    display: inline-block; /* Switching back to inline-block for side-by-side buttons */
+    padding: 15px 30px;
+    margin: 10px; /* Space between buttons */
+    font-size: 1.5em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    width: 200px; /* Fixed width for all buttons */
+  }
+  
+  .logout-button {
+    display: block; /* This makes the button a block-level element */
+    width: 200px; /* Ensures width matches other buttons */
+    margin: 20px auto; /* Centers the button and adds space above */
+    background-color: black;
+  }
+</style>
+</head>
+<body>
+
+<h1>Thank You</h1>
+
+<div class="button-container">
+  <a href="path_to_pdf" class="button" download>Download PDF</a>
+  <a href="/upload" class="button">Upload Again</a>
 </div>
+<a href="/logout" class="button logout-button">Logout</a>
+
+</body>
+</html>
