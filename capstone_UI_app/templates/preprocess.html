@@ -240,7 +240,190 @@
             </div>
         </div>
     </div>
-    </div>
+    <button>Back</button>
+    <button>Next</button>
+    <button 
+        style="background-color: rgb(169, 255, 169);" 
+        type="button" 
+        hx-get="/review" 
+        hx-trigger="click" 
+        hx-swap="outerHTML" 
+        hx-target="#content"
+        >
+        Send
+    </button>
 </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // this is what saves the new image after it has been edited and replaces the old one
+        var originalImageData = '';
+
+        function processImage(operation) {
+            // if there is no previous image from editing then it gets the original
+            var imageURL = originalImageData || readImageDataFromDOM();
+            var csrftoken = getCookie('csrftoken');
+
+            //updates without refreshing the page (takes about a second)
+            $.ajax({
+                url: '/process-image/',
+                type: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    // send the operation and the image to views.py
+                    operation: operation,
+                    image_url: imageURL
+                },
+                success: function (data) {
+                    $('.edited-image').attr('src', data.processed_image);
+                    originalImageData = data.processed_image;
+                    console.log(originalImageData);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error processing image:', error);
+                }
+            });
+        }
+
+        function readImageDataFromDOM() {
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            var imageElement = document.querySelector('.edited-image');
+            canvas.width = imageElement.width;
+            canvas.height = imageElement.height;
+            context.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg');
+        }
+
+        // Function to get CSRF cookie value
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function adjustImage(sliderType, sliderValue) {
+            var imageURL = originalImageData || readImageDataFromDOM();
+            var csrftoken = getCookie('csrftoken');
+
+            console.log(sliderType);
+            console.log(sliderValue);
+            $.ajax({
+                url: '/process-image/',
+                type: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    sliderType: sliderType, // Send the slider type (brightness, saturation, or sharpness)
+                    sliderValue: sliderValue, // Send the slider value
+                    image_url: imageURL
+                },
+                success: function (data) {
+                    $('.edited-image').attr('src', data.processed_image);
+                    originalImageData = data.processed_image;
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error adjusting image:', error);
+                }
+            });
+        }
+
+        function selectColor(operation, colorName) {
+            // Reset styles for all buttons
+            document.querySelectorAll('.settings-button').forEach(function (button) {
+                button.classList.remove('selected');
+            });
+
+            // Add selected style to the clicked button
+            document.getElementById(operation + '-button').classList.add('selected');
+
+            isGrayscale = (operation === 'grayscale');
+
+            // Call the processImage function with the selected operation
+            processImage(operation);
+        }
+
+        function selectChannel(operation, channelName) {
+            document.querySelectorAll('.separation-button').forEach(function (button) {
+                button.classList.remove('selected');
+            });
+            document.getElementById(operation + '-button').classList.add('selected');
+            processImage(operation);
+        }
 
 
+        /* replace the edited image with the original image again
+            then loop through all the checkboxes and reset the settings
+        */
+        function revertChanges() {
+            var originalSrc = document.querySelector('.original-image').src;
+            document.querySelector('.edited-image').src = originalSrc;
+            originalImageData = '';
+
+            // Reset styles for all buttons
+            document.querySelectorAll('.settings-button').forEach(function (button) {
+                button.classList.remove('selected');
+            });
+
+            //reset all checkbox permissions
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = false;
+                checkbox.disabled = false;
+            })
+
+            // set all sliders back to middle
+            document.getElementById('brightness').value = 50;
+            document.getElementById('saturation').value = 50;
+            document.getElementById('sharpness').value = 50;
+        }
+
+        function saveToComputer() {
+            var processedImageURL = document.getElementById("image").src;
+            var downloadLink = document.createElement("a")
+            downloadLink.href = processedImageURL;
+            downloadLink.download = "processed_image.jpg"
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+        /* disabled checkboxes once they have been selected so we don't
+            have to worry about reversing checkboxes, they can revert if they want different settings
+        */
+        function disableCheckbox(checkbox, operation) {
+            if (checkbox.checked) {
+                checkbox.disabled = true;
+                processImage(operation);
+            }
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                // Check if the checkbox is checked
+                if (this.checked) {
+                    // Check if the image is not in grayscale
+                    if (!isGrayscaleImage()) {
+                        // Display popup alert
+                        showGrayscaleAlert();
+                        this.checked = false;
+                    }
+                }
+            });
+        });
+
+        function isGrayscaleImage() {
+            return isGrayscale;
+        }
+
+        function showGrayscaleAlert() {
+            window.alert('Image must be in grayscale for this option.');
+        }
+    </script>
