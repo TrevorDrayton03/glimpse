@@ -20,6 +20,7 @@ urlpatterns = [
     path('preprocess/',views.preprocess_view, name="preprocess"),
     path('review/',views.review_view, name="review"),
     path('thankyou/',views.thankyou_view, name="thankyou"),
+    path('run_inference/', views.run_inference, name='run_inference'),
 ]
 
 if settings.DEBUG:

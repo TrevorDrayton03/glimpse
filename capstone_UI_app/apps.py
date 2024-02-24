@@ -22,8 +22,8 @@ class CapstoneUiAppConfig(AppConfig):
     def ready(self):
         CapstoneUiAppConfig.model = YOLO('capstone_UI_app/best.pt')
         
-        # Run batched inference on a list of images
-        results = CapstoneUiAppConfig.model(['media/images/565Neg.jpg'])  # return a list of Results objects
+        # # Run batched inference on a list of images
+        # results = CapstoneUiAppConfig.model(['media/images/565Neg.jpg'])  # return a list of Results objects
         
         # Process results list
         for result in results:

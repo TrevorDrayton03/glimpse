@@ -49,7 +49,7 @@
     <button
       style="background-color: rgb(169, 255, 169);" 
       type="button"
-      hx-get="/thankyou" 
+      hx-post="{% url 'run_inference' %}"
       hx-trigger="click" 
       hx-swap="outerHTML" 
       hx-target="#content"

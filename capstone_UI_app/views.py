@@ -6,6 +6,11 @@ from django.http import JsonResponse
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage
 from django.contrib import messages
+from django.apps import AppConfig
+from .apps import CapstoneUiAppConfig
+from ultralytics import YOLO
+from django.http import HttpResponse
+
 
 def main_view(request):
     if request.GET.get('ajax') == '1':
@@ -150,3 +155,28 @@ def review_view(request):
     all_images = UploadedImage.objects.all()
     context = {'images': all_images}
     return render(request, 'review.html', context)
+
+@login_required(login_url='/')
+def run_inference(request):
+    if request.method == 'POST':
+        # Assuming model is loaded via AppConfig
+        model = CapstoneUiAppConfig.model
+        if model is not None:
+            results = model(['media/images/565Neg.jpg'])  # Adjust image path as needed
+
+            # Example of processing results
+            for result in results:
+                boxes = result.boxes  # Boxes object for bounding box outputs
+                masks = result.masks  # Masks object for segmentation masks outputs
+                keypoints = result.keypoints  # Keypoints object for pose outputs
+                probs = result.probs  # Probs object for classification outputs
+                result.show()  # display to screen
+                result.save(filename='result.jpg')  # save to disk
+
+    #         # Redirect or render a response
+    #         return render(request, 'thankyou.html')
+    #     else:
+    #         return HttpResponse("Model not loaded.")
+    # else:
+        # Render the page with the button if request is not POST
+        return render(request, 'thankyou.html')
