@@ -79,6 +79,14 @@
         margin-top: 20px;
     }
 
+    .settings-button {
+        background-color: lightgray;
+    }
+
+    .settings-button.selected {
+        background-color: darkgray;
+    }
+
     .contrast-enhance {
         display: flex;
         flex-direction: column;
@@ -147,11 +155,15 @@
 
     .separation-button {
         margin: 5px;
+        background-color: lightgray;
+    }
+
+    .separation-button.selected {
+        background-color: darkgray;
     }
 </style>
 
 <div id="content">
-    <h1>Pre-Processing</h1>
     <p id="file-name">File Name</p>
     <div class="container">
         <div class="leftside">
@@ -163,7 +175,9 @@
                 <div class="bottom-container">
                     <h3>Original Fundus Image</h3>
                     <img class="original-image" src="{{ images.0.image.url }}">
-                    <button class="revert-button">Revert Changes</button>
+                    <button class="revert-button" onClick="revertChanges()">Revert Changes</button>
+                    <button class="saveToComputer" type="button" onClick="saveToComputer()">Save Image to
+                        Computer</button>
                 </div>
             </div>
         </div>
@@ -171,65 +185,62 @@
         <div class="rightside">
             <div class="settings">
                 <div class="image-color">
-                    <button class="settings-button">RGB</button>
-                    <button class="settings-button">Grayscale</button>
-                    <button class="settings-button">Lab Color</button>
+                    <button class="settings-button" id="rgb-button" onClick="selectColor('rgb', 'RGB')">RGB</button>
+                    <button class="settings-button" id="grayscale-button"
+                        onClick="selectColor('grayscale', 'Grayscale')">Grayscale</button>
+                    <button class="settings-button" id="labcolor-button"
+                        onClick="selectColor('labcolor', 'Lab Color')">Lab Color</button>
                 </div>
                 <div class="contrast-enhance">
                     <h2>Contract Enhancement</h2>
                     <div class="checkbox-row">
-                        <input type="checkbox" id="HE">
+                        <input type="checkbox" id="HE" onclick="disableCheckbox(this, 'HE')">
                         <label for="HE">Histogram Equalization</label>
-                        <input type="checkbox" id="CS">
+                        <input type="checkbox" id="CS" onclick="disableCheckbox(this, 'CS')">
                         <label for="CS">Contrast Stretching</label>
-                        <input type="checkbox" id="GC">
+                        <input type="checkbox" id="GC" onclick="disableCheckbox(this, 'GC')">
                         <label for="GC">Gamma Correction</label>
                     </div>
                     <div class="checkbox-row">
-                        <input type="checkbox" id="AHE">
+                        <input type="checkbox" id="AHE" onclick="disableCheckbox(this, 'AHE')">
                         <label for="HE">Adaptive Histogram Equalization</label>
-                        <input type="checkbox" id="SC">
+                        <input type="checkbox" id="SC" onclick="disableCheckbox(this, 'SC')">
                         <label for="SC">Sigmoid Correction</label>
-                        <input type="checkbox" id="LHE">
+                        <input type="checkbox" id="LHE" onclick="disableCheckbox(this, 'LHE')">
                         <label for="LHE">Local Histogram Equalization</label>
                     </div>
                     <div class="checkbox-row">
-                        <input type="checkbox" id="PLCS">
+                        <input type="checkbox" id="PLS" onclick="disableCheckbox(this, 'PLS')">
                         <label for="PLCS">Piecewise Linear Contrast Stretching</label>
                     </div>
                 </div>
                 <div class="channel-separation">
                     <h2>Color Channel Separation</h2>
-                    <button class="separation-button">Red</button>
-                    <button class="separation-button">Green</button>
-                    <button class="separation-button">Blue</button>
+                    <button class="separation-button" id="redchannel-button" onClick="selectChannel('redchannel', 'redchannel')">Red</button>
+                    <button class="separation-button" id="greenchannel-button" onClick="selectChannel('greenchannel', 'greenchannel')">Green</button>
+                    <button class="separation-button" id="bluechannel-button" onClick="selectChannel('bluechannel', 'bluechannel')">Blue</button>
                 </div>
                 <div class="image-adjustment">
                     <h2>Image Adjustment</h2>
-                    <label for="brightness">Brightness:</label>
-                    <input type="range" id="brightness" name="brightness" min="0" max="100" value="50">
-                    <br />
-                    <label for="saturation">Saturation:</label>
-                    <input type="range" id="saturation" name="saturation" min="0" max="100" value="50">
-                    <br />
-                    <label for="sharpness">Sharpness:</label>
-                    <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50">
+                    <div>
+                        <label for="brightness">Brightness:</label>
+                        <input type="range" id="brightness" name="brightness" min="0" max="100" value="50"
+                            oninput="adjustImage('brightness', this.value)">
+                        <br />
+                        <label for="saturation">Saturation:</label>
+                        <input type="range" id="saturation" name="saturation" min="0" max="100" value="50"
+                            oninput="adjustImage('saturation', this.value)">
+                        <br />
+                        <label for="sharpness">Sharpness:</label>
+                        <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50"
+                            oninput="adjustImage('sharpness', this.value)">
+                    </div>
+                    <button class="save-button" onClick="saveImage()">Save Sliders</button>
                 </div>
             </div>
         </div>
     </div>
-    <button>Back</button>
-    <button>Next</button>
-    <button 
-        style="background-color: rgb(169, 255, 169);" 
-        type="button" 
-        hx-get="/review" 
-        hx-trigger="click" 
-        hx-swap="outerHTML" 
-        hx-target="#content"
-        >
-        Send
-    </button>
+    </div>
 </div>
 
 
