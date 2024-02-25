@@ -161,10 +161,19 @@
     .separation-button.selected {
         background-color: darkgray;
     }
+
 </style>
 
 <div id="content">
-    <p id="file-name">File Name</p>
+    <div>
+    <p id="file-name">{{ images.0.image.name }}</p>
+        <div>
+            {% if images|length > 1 %}
+            <button onclick="navigate(-1)" style="margin-right: 10px;"> ← </button>
+            <button onclick="navigate(1)"> → </button>
+            {% endif %}
+        </div>
+    </div>
     <div class="container">
         <div class="leftside">
             <div class="preprocess">
@@ -240,8 +249,10 @@
             </div>
         </div>
     </div>
+    <!-- {% if images|length > 1 %}
     <button>Back</button>
     <button>Next</button>
+    {% endif %} -->
     <button 
         style="background-color: rgb(169, 255, 169);" 
         type="button" 
@@ -426,4 +437,32 @@
         function showGrayscaleAlert() {
             window.alert('Image must be in grayscale for this option.');
         }
-    </script>
+
+        var currentImageIndex = 0;
+    var images = [
+        {% for image in images %}
+            "{{ image.image.url }}",
+        {% endfor %}
+    ];
+
+    function navigate(direction) {
+        currentImageIndex += direction;
+        if (currentImageIndex >= images.length) {
+            currentImageIndex = 0; // Loop back to the first image
+        } else if (currentImageIndex < 0) {
+            currentImageIndex = images.length - 1; // Loop back to the last image
+        }
+        updateImageDisplay();
+    }
+
+    function updateImageDisplay() {
+        document.querySelector('.edited-image').src = images[currentImageIndex];
+        document.querySelector('.original-image').src = images[currentImageIndex];
+        document.getElementById('file-name').textContent = extractFileName(images[currentImageIndex]);
+    }
+
+    function extractFileName(url) {
+        var parts = url.split('/');
+        return parts[parts.length - 1];
+    }
+</script>
