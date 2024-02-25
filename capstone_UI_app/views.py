@@ -1,15 +1,15 @@
+import os
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
+from django.conf import settings
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage
-from django.contrib import messages
-from django.apps import AppConfig
 from .apps import CapstoneUiAppConfig
-from ultralytics import YOLO
-from django.http import HttpResponse
+from .pdf_report import generate_pdf_report
 
 
 # python libraries for preprocessing
@@ -24,7 +24,7 @@ from skimage import exposure
 
 def main_view(request):
     if request.GET.get('ajax') == '1':
-        # If it's an AJAX request, return the AJAX template
+        # If it's an AJAX request, return the AJAX template (so that the base template does not get loaded inside itself)
         return render(request, 'ajax_main.html')
     else:
         return render(request, 'main.html')
@@ -166,6 +166,7 @@ MAX_BRIGHTNESS = 100
 scale = 2.0
 original_image = None
 image_url = None
+
 # processes the image based off of settings selection
 def process_image(request):
     global original_image
@@ -280,24 +281,40 @@ def review_view(request):
 @login_required(login_url='/')
 def run_inference(request):
     if request.method == 'POST':
-        # Assuming model is loaded via AppConfig
         model = CapstoneUiAppConfig.model
         if model is not None:
-            results = model(['media/images/565Neg.jpg'])  # Adjust image path as needed
+            images = UploadedImage.objects.all()
+            inference_results = []
+            if images.exists():  
+                for image in images:
+                    image_path = image.image.path
+                    results = model([image_path])  
+                    for result in results:
+                        annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
+                        result.save(annotated_image_path)  
+                        result_data = {
+                            "original_path": image_path,
+                            "processed_path": image_path,
+                            "boxes": result.boxes,
+                            "masks": result.masks,
+                            "keypoints": result.keypoints,
+                            "probs": result.probs,
+                            "annotated_image_path": annotated_image_path,
+                        }
+                        # result.show()
+                        inference_results.append(result_data)
+                pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
+                generate_pdf_report(inference_results, pdf_path)
+                return render(request, 'thankyou.html')
+            else:
+                return HttpResponse("No images found for inference.")
+        else:
+            return HttpResponse("Model not loaded.")
+    else:
+        return HttpResponse("This endpoint expects a POST request.")
 
-            # Example of processing results
-            for result in results:
-                boxes = result.boxes  # Boxes object for bounding box outputs
-                masks = result.masks  # Masks object for segmentation masks outputs
-                keypoints = result.keypoints  # Keypoints object for pose outputs
-                probs = result.probs  # Probs object for classification outputs
-                result.show()  # display to screen
-                result.save(filename='result.jpg')  # save to disk
-
-    #         # Redirect or render a response
-    #         return render(request, 'thankyou.html')
-    #     else:
-    #         return HttpResponse("Model not loaded.")
-    # else:
-        # Render the page with the button if request is not POST
-        return render(request, 'thankyou.html')
+def download_pdf(request):
+    pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
+    response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="GLIMPSE.pdf"'
+    return response
