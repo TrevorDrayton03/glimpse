@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
-from .models import UploadedImage
+from .models import UploadedImage, PreprocessedImage
 from .apps import CapstoneUiAppConfig
 from .pdf_report import generate_pdf_report
 
@@ -102,14 +102,19 @@ class custom_login_view(LoginView):
 
 @login_required(login_url='/')
 def dashboard_upload_view(request):
-    all_images = UploadedImage.objects.all()
+    # all_images = UploadedImage.objects.all()
+    all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
 
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             uploaded_image = request.FILES['image']
+            
             new_image = UploadedImage(image=uploaded_image)
             new_image.save()
+
+            PreprocessedImage.objects.create(original_image=new_image, image=uploaded_image)
+
     else:
         form = ImageUploadForm()
 
@@ -139,16 +144,23 @@ def delete_image(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
     # Check if the request method is POST (only allow POST requests for deletion)
     if request.method == 'POST':
-        # Delete the image from storage
+        # Attempt to retrieve the related preprocessed image
+        preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+        
+        # If a preprocessed image exists, delete it
+        if preprocessed_image:
+            preprocessed_image.image.delete()  # Delete the file from storage
+            preprocessed_image.delete()  # Delete the preprocessed image record from the database
+
+        # Delete the original image from storage
         image.image.delete()
 
-        # Delete the image record from the database
+        # Delete the original image record from the database
         image.delete()
 
     all_images = UploadedImage.objects.all()
-
+    print(all_images)
     form = ImageUploadForm()
-
     context = {'form': form, 'images': all_images if all_images.exists() else []}
 
     # Redirect back to the dashboard with images
@@ -157,7 +169,8 @@ def delete_image(request, image_id):
 # shows the preprocess page
 @login_required(login_url='/')
 def preprocess_view(request):
-    all_images = UploadedImage.objects.all()
+    # all_images = UploadedImage.objects.all()
+    all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     context = {'images': all_images}
     
     return render(request, 'preprocess.html', context)
@@ -274,7 +287,8 @@ def piecewise_linear(image, min_val, max_val):
 
 @login_required(login_url='/')
 def review_view(request):
-    all_images = UploadedImage.objects.all()
+    # all_images = UploadedImage.objects.all()
+    all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     context = {'images': all_images}
     return render(request, 'review.html', context)
 

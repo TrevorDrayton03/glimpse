@@ -166,7 +166,7 @@
 
 <div id="content">
     <div>
-    <p id="file-name">{{ images.0.image.name }}</p>
+    <p id="file-name">{{ images.0.image.name|cut:"images/" }}</p>
         <div>
             {% if images|length > 1 %}
             <button onclick="navigate(-1)" style="margin-right: 10px;"> ← </button>
@@ -179,7 +179,7 @@
             <div class="preprocess">
                 <div class="edited-container">
                     <h3>Pre-processed Fundus Image</h3>
-                    <img class="edited-image" src="{{ images.0.image.url }}">
+                    <img class="edited-image" src="{{ images.0.preprocessed_image.image.url }}">
                 </div>
                 <div class="bottom-container">
                     <h3>Original Fundus Image</h3>
@@ -276,7 +276,7 @@
 
             //updates without refreshing the page (takes about a second)
             $.ajax({
-                url: '/process-image/',
+                url: '/processimage/',
                 type: 'POST',
                 headers: { 'X-CSRFToken': csrftoken },
                 data: {
@@ -328,7 +328,7 @@
             console.log(sliderType);
             console.log(sliderValue);
             $.ajax({
-                url: '/process-image/',
+                url: '/processimage/',
                 type: 'POST',
                 headers: { 'X-CSRFToken': csrftoken },
                 data: {

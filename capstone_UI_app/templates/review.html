@@ -42,8 +42,8 @@
       {% for image in images %}
       <tr>
         <td><img src="{{ image.image.url }}" alt="Uploaded Image"></td>
-        <td><img src="{{ image.image.url }}" alt="Preprocessed Image"></td>
-        <td>{{ image.image.name }}</td>
+        <td><img src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
+        <td>{{ image.image.name|cut:"images/" }}</td>
         <td>
           <button class="remove-btn" hx-post="{% url 'delete_image' image.id %}"
                   hx-swap="outerHTML" hx-target="#content">
