@@ -1,22 +1,4 @@
 <style>
-    body {
-        text-align: center;
-    }
-
-    h1 {
-        text-decoration: underline;
-    }
-
-    h2 {
-        font-size: 20px;
-        text-decoration: underline;
-        padding-bottom: 5px;
-    }
-
-    h3 {
-        font-size: 15px;
-    }
-
     .container {
         display: flex;
     }
@@ -66,11 +48,11 @@
         max-width: 600px;
     }
 
-    button {
+    .preprocess-button {
         font-size: 20px;
     }
 
-    button:hover {
+    .preprocess-button button:hover {
         cursor: pointer;
     }
 
@@ -164,17 +146,17 @@
 
 </style>
 
-<div id="content">
+<div id="content" style="text-align: center;">
     <div>
-    <p id="file-name">{{ images.0.image.name|cut:"images/" }}</p>
+        <p id="file-name">{{ images.0.image.name|cut:"images/" }}</p>
         <div>
             {% if images|length > 1 %}
-            <button onclick="navigate(-1)" style="margin-right: 10px;"> ← </button>
-            <button onclick="navigate(1)"> → </button>
+            <button class="preprocess-button" onclick="navigate(-1)" style="margin-right: 10px;"> ← </button>
+            <button class="preprocess-button" onclick="navigate(1)"> → </button>
             {% endif %}
         </div>
     </div>
-    <div class="container">
+    <div class="container" style="text-align: center;">
         <div class="leftside">
             <div class="preprocess">
                 <div class="edited-container">
@@ -184,8 +166,8 @@
                 <div class="bottom-container">
                     <h3>Original Fundus Image</h3>
                     <img class="original-image" src="{{ images.0.image.url }}">
-                    <button class="revert-button" onClick="revertChanges()">Revert Changes</button>
-                    <button class="saveToComputer" type="button" onClick="saveToComputer()">Save Image to
+                    <button class="revert-button preprocess-button" onClick="revertChanges()">Revert Changes</button>
+                    <button class="saveToComputer preprocess-button" type="button" onClick="saveToComputer()">Save Image to
                         Computer</button>
                 </div>
             </div>
@@ -194,10 +176,10 @@
         <div class="rightside">
             <div class="settings">
                 <div class="image-color">
-                    <button class="settings-button" id="rgb-button" onClick="selectColor('rgb', 'RGB')">RGB</button>
-                    <button class="settings-button" id="grayscale-button"
+                    <button class="settings-button preprocess-button" id="rgb-button" onClick="selectColor('rgb', 'RGB')">RGB</button>
+                    <button class="settings-button preprocess-button" id="grayscale-button"
                         onClick="selectColor('grayscale', 'Grayscale')">Grayscale</button>
-                    <button class="settings-button" id="labcolor-button"
+                    <button class="settings-button preprocess-button" id="labcolor-button"
                         onClick="selectColor('labcolor', 'Lab Color')">Lab Color</button>
                 </div>
                 <div class="contrast-enhance">
@@ -225,9 +207,9 @@
                 </div>
                 <div class="channel-separation">
                     <h2>Color Channel Separation</h2>
-                    <button class="separation-button" id="redchannel-button" onClick="selectChannel('redchannel', 'redchannel')">Red</button>
-                    <button class="separation-button" id="greenchannel-button" onClick="selectChannel('greenchannel', 'greenchannel')">Green</button>
-                    <button class="separation-button" id="bluechannel-button" onClick="selectChannel('bluechannel', 'bluechannel')">Blue</button>
+                    <button class="separation-button preprocess-button" id="redchannel-button" onClick="selectChannel('redchannel', 'redchannel')">Red</button>
+                    <button class="separation-button preprocess-button" id="greenchannel-button" onClick="selectChannel('greenchannel', 'greenchannel')">Green</button>
+                    <button class="separation-button preprocess-button" id="bluechannel-button" onClick="selectChannel('bluechannel', 'bluechannel')">Blue</button>
                 </div>
                 <div class="image-adjustment">
                     <h2>Image Adjustment</h2>
@@ -244,16 +226,13 @@
                         <input type="range" id="sharpness" name="sharpness" min="0" max="100" value="50"
                             oninput="adjustImage('sharpness', this.value)">
                     </div>
-                    <button class="save-button" onClick="saveImage()">Save Sliders</button>
+                    <button class="save-button preprocess-button" onClick="saveImage()">Save Sliders</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- {% if images|length > 1 %}
-    <button>Back</button>
-    <button>Next</button>
-    {% endif %} -->
     <button 
+        class="preprocess-button"
         style="background-color: rgb(169, 255, 169);" 
         type="button" 
         hx-get="/review" 
@@ -261,7 +240,17 @@
         hx-swap="outerHTML" 
         hx-target="#content"
         >
-        Send
+        Confirm
+    </button>
+    <button 
+        class="preprocess-button"
+        type="button" 
+        hx-get="/dashboard/upload/" 
+        hx-trigger="click" 
+        hx-swap="outerHTML" 
+        hx-target="#content"
+        >
+        Go Back
     </button>
 </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

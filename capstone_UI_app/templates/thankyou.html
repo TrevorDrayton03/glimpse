@@ -1,14 +1,14 @@
 <style>
-  body {
+  .thankyou-body {
     text-align: center;
     padding-top: 50px;
     font-family: Arial, sans-serif;
   }
-  h1 {
+  .thankyou-h1 {
     font-size: 3em;
     margin-bottom: 0.5em;
   }
-  .button {
+  .thankyou-button {
     display: inline-block; /* Switching back to inline-block for side-by-side buttons */
     padding: 15px 30px;
     margin: 10px; /* Space between buttons */
@@ -20,25 +20,32 @@
     cursor: pointer;
     text-decoration: none;
     width: 200px; /* Fixed width for all buttons */
+    text-align: center;
+    white-space: nowrap; /* Force the text to be on one line */
+
   }
   
-  .logout-button {
+  .thankyou-logout-button {
     display: block; /* This makes the button a block-level element */
     width: 200px; /* Ensures width matches other buttons */
     margin: 20px auto; /* Centers the button and adds space above */
     background-color: black;
   }
 </style>
-</head>
-<body>
-
-<h1>Thank You</h1>
-
-<div class="button-container">
-  <a href="{% url 'download_pdf' %}" class="button" download>Download PDF</a>
-  <a href="/upload" class="button">Upload Again</a>
+<div class="thankyou-body">
+  <h1 class="thankyou-h1">Thank You</h1>
+  <div >
+    <a href="{% url 'download_pdf' %}" class="thankyou-button">Download PDF</a>
+    <button
+      type="button"
+      class="thankyou-button"
+      hx-get="{% url 'dashboard_upload' %}"
+      hx-trigger="click" 
+      hx-swap="outerHTML" 
+      hx-target="#content"
+      >
+      Upload Again
+    </button>
+  </div>
+  <a href="/logout" class="thankyou-button thankyou-logout-button">Logout</a>
 </div>
-<a href="/logout" class="button logout-button">Logout</a>
-
-</body>
-</html>

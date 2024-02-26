@@ -17,7 +17,7 @@
     cursor: pointer;
   }
   
-  img {
+  .review-img {
     width: auto; 
     height: 150px; 
     max-width: none; 
@@ -41,8 +41,8 @@
     <tbody>
       {% for image in images %}
       <tr>
-        <td><img src="{{ image.image.url }}" alt="Uploaded Image"></td>
-        <td><img src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
+        <td><img class="review-img" src="{{ image.image.url }}" alt="Uploaded Image"></td>
+        <td><img class="review-img" src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
         <td>{{ image.image.name|cut:"images/" }}</td>
         <td>
           <button class="remove-btn" hx-post="{% url 'delete_image' image.id %}"
@@ -66,9 +66,14 @@
       >
       Confirm
     </button>
-    <button 
-      type="button" 
+    <button
+      type="button"
+      hx-post="{% url 'preprocess' %}"
+      hx-trigger="click" 
+      hx-swap="outerHTML" 
+      hx-target="#content"
       >
-    Cancel
-  </button>
+      Go Back
+    </button>
+  </div>
 </div>
