@@ -22,9 +22,7 @@
     width: 200px; /* Fixed width for all buttons */
     text-align: center;
     white-space: nowrap; /* Force the text to be on one line */
-
-  }
-  
+  } 
   .thankyou-logout-button {
     display: block; /* This makes the button a block-level element */
     width: 200px; /* Ensures width matches other buttons */
@@ -32,7 +30,7 @@
     background-color: black;
   }
 </style>
-<div class="thankyou-body">
+<div class="thankyou-body" id="content">
   <h1 class="thankyou-h1">Thank You</h1>
   <div >
     <a href="{% url 'download_pdf' %}" class="thankyou-button">Download PDF</a>
