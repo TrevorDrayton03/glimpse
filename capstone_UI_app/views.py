@@ -166,6 +166,33 @@ def delete_image(request, image_id):
     # Redirect back to the dashboard with images
     return render(request, 'dashboard_upload.html', context)
 
+@login_required(login_url='/')
+def delete_image_review(request, image_id):
+    image = get_object_or_404(UploadedImage, id=image_id)
+    # Check if the request method is POST (only allow POST requests for deletion)
+    if request.method == 'POST':
+        # Attempt to retrieve the related preprocessed image
+        preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+        
+        # If a preprocessed image exists, delete it
+        if preprocessed_image:
+            preprocessed_image.image.delete()  # Delete the file from storage
+            preprocessed_image.delete()  # Delete the preprocessed image record from the database
+
+        # Delete the original image from storage
+        image.image.delete()
+
+        # Delete the original image record from the database
+        image.delete()
+
+    all_images = UploadedImage.objects.all()
+    print(all_images)
+    form = ImageUploadForm()
+    context = {'form': form, 'images': all_images if all_images.exists() else []}
+
+    # Redirect back to the dashboard with images
+    return render(request, 'review.html', context)
+
 # shows the preprocess page
 @login_required(login_url='/')
 def preprocess_view(request):

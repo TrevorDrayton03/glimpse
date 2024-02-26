@@ -45,7 +45,7 @@
         <td><img class="review-img" src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
         <td>{{ image.image.name|cut:"images/" }}</td>
         <td>
-          <button class="remove-btn" hx-post="{% url 'delete_image' image.id %}"
+          <button class="remove-btn" hx-post="{% url 'delete_image_review' image.id %}"
                   hx-swap="outerHTML" hx-target="#content">
             Delete
           </button>
