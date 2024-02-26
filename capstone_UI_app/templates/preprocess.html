@@ -276,7 +276,7 @@
 
             //updates without refreshing the page (takes about a second)
             $.ajax({
-                url: '/processimage/',
+                url: '/process_image/',
                 type: 'POST',
                 headers: { 'X-CSRFToken': csrftoken },
                 data: {
@@ -328,7 +328,7 @@
             console.log(sliderType);
             console.log(sliderValue);
             $.ajax({
-                url: '/processimage/',
+                url: '/process_image/',
                 type: 'POST',
                 headers: { 'X-CSRFToken': csrftoken },
                 data: {
