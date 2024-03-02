@@ -8,17 +8,13 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage, PreprocessedImage
-from .apps import CapstoneUiAppConfig
+from .apps import CapstoneUiAppConfig, initialize_and_predict
 from .pdf_report import generate_pdf_report
-
 
 # python libraries for preprocessing
 import cv2
 import numpy as np
-from io import BytesIO
-from PIL import Image, ImageEnhance, ImageOps
 import base64
-from urllib.parse import urljoin
 from skimage import exposure
 
 
@@ -328,22 +324,27 @@ def run_inference(request):
             inference_results = []
             if images.exists():  
                 for image in images:
+                    prediction, probabilities = initialize_and_predict(image.image.path)
+                    print(f"Predicted class: {prediction}, Probabilities: {probabilities}")
                     image_path = image.image.path
                     results = model([image_path])  
                     for result in results:
+                        # raw_confidences = result.probs[:, -1].cpu().numpy()
+                        # print(raw_confidences, " raw_confidences")
+                        # confidences = result.xyxy[:, 4]
+                        # print(confidences, " confidences")
                         annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
                         result.save(annotated_image_path)  
                         result_data = {
                             "original_path": image_path,
                             "processed_path": image_path,
                             "boxes": result.boxes,
-                            "masks": result.masks,
-                            "keypoints": result.keypoints,
-                            "probs": result.probs,
                             "annotated_image_path": annotated_image_path,
                         }
                         # result.show()
                         inference_results.append(result_data)
+                        print(result.boxes.conf, " result.boxes.conf")
+                        
                 pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
                 generate_pdf_report(inference_results, pdf_path)
                 return render(request, 'thankyou.html')
