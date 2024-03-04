@@ -386,11 +386,11 @@
         }
 
         function saveToComputer() {
-            var processedImageURL = document.getElementById("image").src;
+            var processedImageURL = document.querySelector(".edited-image").src;
             var downloadLink = document.createElement("a")
             downloadLink.href = processedImageURL;
             downloadLink.download = "processed_image.jpg"
-
+    
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
