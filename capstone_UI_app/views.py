@@ -11,6 +11,7 @@ from .models import UploadedImage, PreprocessedImage
 from .apps import CapstoneUiAppConfig, initialize_and_predict
 from .pdf_report import generate_pdf_report
 from django.core.files.base import ContentFile
+from django.core.serializers import serialize
 
 # python libraries for preprocessing
 import cv2
@@ -195,23 +196,25 @@ def delete_image_review(request, image_id):
 def preprocess_view(request):
     # all_images = UploadedImage.objects.all()
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
-    context = {'images': all_images}
+    all_images_json = serialize('json', all_images)
+    print(all_images_json)
+    context = {'images': all_images, 'images_json': all_images_json}
     
     return render(request, 'preprocess.html', context)
 
 MAX_BRIGHTNESS = 100
 scale = 2.0
 original_image = None
-image_url = None
+image_data = None
 
 # processes the image based off of settings selection
 def process_image(request):
     global original_image
-    global image_url
+    global image_data
 
     if original_image is None:
-        image_url = request.POST.get('image_url')
-        image_bytes = base64.b64decode(image_url.split(',')[1] if len(image_url.split(',')) > 1 else "")
+        image_data = request.POST.get('image_data')
+        image_bytes = base64.b64decode(image_data.split(',')[1] if len(image_data.split(',')) > 1 else "")
         nparr = np.frombuffer(image_bytes, np.uint8)
         original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     
@@ -221,7 +224,7 @@ def process_image(request):
 
     adjustment = (sliderValue - 50) * scale
     # Decode Base64 image data
-    image_bytes = base64.b64decode(image_url.split(',')[1])
+    image_bytes = base64.b64decode(image_data.split(',')[1])
 
     # Convert image data to numpy array
     nparr = np.frombuffer(image_bytes, np.uint8)

@@ -256,17 +256,28 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // this is what saves the new image after it has been edited and replaces the old one
-    var originalImageData = '';
+    var editedImageData = ''; // 'data is data:image/jpeg;base64,' followed by bytes
     var currentImageIndex = 0;
     var images = [
         {% for image in images %}
             "{{ image.image.url }}",
         {% endfor %}
     ];
+
+    var images_object = "{{ images|safe }}";  
+    {% comment %} console.log(images_object);
+    console.log(images_object[0]);
+    console.log(images_object[0].url);
+    console.log(images_object[0].id); {% endcomment %}
+
     function processImage(operation) {
+        console.log(editedImageData);
         // if there is no previous image from editing then it gets the original
-        var imageURL = originalImageData || readImageDataFromDOM();
+        //var imageData = editedImageData || readImageDataFromDOM();
+        //var imageData = editedImageData;
+        var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
+        console.log(imageData);
 
         //updates without refreshing the page (takes about a second)
         $.ajax({
@@ -276,12 +287,12 @@
             data: {
                 // send the operation and the image to views.py
                 operation: operation,
-                image_url: imageURL
+                image_url: imageData
             },
             success: function (data) {
                 $('.edited-image').attr('src', data.processed_image);
-                originalImageData = data.processed_image;
-                // console.log(originalImageData);
+                editedImageData = data.processed_image;
+                // console.log(editedImageData);
             },
             error: function (xhr, status, error) {
                 console.error('Error processing image:', error);
@@ -297,7 +308,7 @@
         canvas.height = imageElement.height;
         context.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
         return canvas.toDataURL('image/jpeg');
-    }
+    } 
 
     // Function to get CSRF cookie value
     function getCookie(name) {
@@ -316,7 +327,9 @@
     }
 
     function adjustImage(sliderType, sliderValue) {
-        var imageURL = originalImageData || readImageDataFromDOM();
+        //var imageData = editedImageData || readImageDataFromDOM();
+        //var imageData = editedImageData;
+        var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
 
         // console.log(sliderType);
@@ -328,11 +341,11 @@
             data: {
                 sliderType: sliderType, // Send the slider type (brightness, saturation, or sharpness)
                 sliderValue: sliderValue, // Send the slider value
-                image_url: imageURL
+                image_data: imageData
             },
             success: function (data) {
                 $('.edited-image').attr('src', data.processed_image);
-                originalImageData = data.processed_image;
+                editedImageData = data.processed_image;
             },
             error: function (xhr, status, error) {
                 console.error('Error adjusting image:', error);
@@ -370,7 +383,7 @@
     function revertChanges() {
         var originalSrc = document.querySelector('.original-image').src;
         document.querySelector('.edited-image').src = originalSrc;
-        originalImageData = '';
+        editedImageData = '';
 
         // Reset styles for all buttons
         document.querySelectorAll('.settings-button').forEach(function (button) {
