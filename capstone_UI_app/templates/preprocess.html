@@ -278,7 +278,6 @@
         var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
         console.log(imageData);
-
         //updates without refreshing the page (takes about a second)
         $.ajax({
             url: '/process_image/',
@@ -287,12 +286,12 @@
             data: {
                 // send the operation and the image to views.py
                 operation: operation,
-                image_url: imageData
+                image_data: imageData,
+                
             },
             success: function (data) {
                 $('.edited-image').attr('src', data.processed_image);
                 editedImageData = data.processed_image;
-                // console.log(editedImageData);
             },
             error: function (xhr, status, error) {
                 console.error('Error processing image:', error);
@@ -359,12 +358,10 @@
             button.classList.remove('selected');
         });
 
-        // Add selected style to the clicked button
         document.getElementById(operation + '-button').classList.add('selected');
 
         isGrayscale = (operation === 'grayscale');
 
-        // Call the processImage function with the selected operation
         processImage(operation);
     }
 

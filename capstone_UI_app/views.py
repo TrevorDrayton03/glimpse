@@ -157,7 +157,7 @@ def delete_image(request, image_id):
         image.delete()
 
     all_images = UploadedImage.objects.all()
-    print(all_images)
+    # print(all_images)
     form = ImageUploadForm()
     context = {'form': form, 'images': all_images if all_images.exists() else []}
 
@@ -184,7 +184,7 @@ def delete_image_review(request, image_id):
         image.delete()
 
     all_images = UploadedImage.objects.all()
-    print(all_images)
+    # print(all_images)
     form = ImageUploadForm()
     context = {'form': form, 'images': all_images if all_images.exists() else []}
 
@@ -197,7 +197,7 @@ def preprocess_view(request):
     # all_images = UploadedImage.objects.all()
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     all_images_json = serialize('json', all_images)
-    print(all_images_json)
+    # print(all_images_json)
     context = {'images': all_images, 'images_json': all_images_json}
     
     return render(request, 'preprocess.html', context)
@@ -209,6 +209,7 @@ image_data = None
 
 # processes the image based off of settings selection
 def process_image(request):
+    print(request.POST)
     global original_image
     global image_data
 
@@ -273,7 +274,7 @@ def process_image(request):
             min_val, max_val = 50, 200
             processed_image = piecewise_linear(image, min_val, max_val)
         elif sliderType == 'brightness':
-            print(adjustment)
+            # print(adjustment)
             if adjustment != 0:
                 hsv = cv2.cvtColor(newImage, cv2.COLOR_BGR2HSV)
                 h, s, v = cv2.split(hsv)
@@ -300,18 +301,6 @@ def process_image(request):
         
         _, buffer = cv2.imencode('.jpg', processed_image)
         processed_image_base64 = base64.b64encode(buffer).decode()
-
-        # turn the base64 string into an image
-        processed_image_base64 = base64.b64encode(buffer).decode()
-
-        # Step 1: Decode the Base64 string to get the binary content
-        image_data = base64.b64decode(processed_image_base64)
-
-        # Step 2: Create a Django ContentFile from the binary data
-        # You might want to provide a meaningful name with the correct extension for the image file
-        image_name = "processed_image.jpg"
-        image_file = ContentFile(image_data, name=image_name)
-        # model_instance.image.save(image_name, image_file, save=True)
 
         return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
     except Exception as e:
