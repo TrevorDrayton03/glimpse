@@ -271,13 +271,8 @@
     console.log(images_object[0].id); {% endcomment %}
 
     function processImage(operation) {
-        console.log(editedImageData);
-        // if there is no previous image from editing then it gets the original
-        //var imageData = editedImageData || readImageDataFromDOM();
-        //var imageData = editedImageData;
         var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
-        console.log(imageData);
         //updates without refreshing the page (takes about a second)
         $.ajax({
             url: '/process_image/',
@@ -326,13 +321,9 @@
     }
 
     function adjustImage(sliderType, sliderValue) {
-        //var imageData = editedImageData || readImageDataFromDOM();
-        //var imageData = editedImageData;
         var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
 
-        // console.log(sliderType);
-        // console.log(sliderValue);
         $.ajax({
             url: '/process_image/',
             type: 'POST',

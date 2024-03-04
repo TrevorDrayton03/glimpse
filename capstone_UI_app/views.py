@@ -202,22 +202,13 @@ def preprocess_view(request):
     
     return render(request, 'preprocess.html', context)
 
-MAX_BRIGHTNESS = 100
-scale = 2.0
-original_image = None
-image_data = None
-
 # processes the image based off of settings selection
 def process_image(request):
-    print(request.POST)
-    global original_image
-    global image_data
-
-    if original_image is None:
-        image_data = request.POST.get('image_data')
-        image_bytes = base64.b64decode(image_data.split(',')[1] if len(image_data.split(',')) > 1 else "")
-        nparr = np.frombuffer(image_bytes, np.uint8)
-        original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    scale = 2.0
+    image_data = request.POST.get('image_data')
+    image_bytes = base64.b64decode(image_data.split(',')[1] if len(image_data.split(',')) > 1 else "")
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     
     operation = request.POST.get('operation')
     sliderType = request.POST.get('sliderType')
