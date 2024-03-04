@@ -206,6 +206,8 @@ def preprocess_view(request):
 def process_image(request):
     scale = 2.0
     image_data = request.POST.get('image_data')
+    image_id = request.POST.get('image_id')
+    image_name = request.POST.get('image_name')
     image_bytes = base64.b64decode(image_data.split(',')[1] if len(image_data.split(',')) > 1 else "")
     nparr = np.frombuffer(image_bytes, np.uint8)
     original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -293,6 +295,14 @@ def process_image(request):
         _, buffer = cv2.imencode('.jpg', processed_image)
         processed_image_base64 = base64.b64encode(buffer).decode()
 
+        #### Save the processed image ####
+        try:
+            image = UploadedImage.objects.get(id=image_id)
+            preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+            preprocessed_image.image.save(image_name, ContentFile(buffer), save=True)
+        except UploadedImage.DoesNotExist:
+            print("Image not found")
+        ##################################
         return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
     except Exception as e:
         return JsonResponse({'error': str(e)})

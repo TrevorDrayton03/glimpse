@@ -264,15 +264,17 @@
         {% endfor %}
     ];
 
-    var images_object = "{{ images|safe }}";  
-    {% comment %} console.log(images_object);
-    console.log(images_object[0]);
-    console.log(images_object[0].url);
-    console.log(images_object[0].id); {% endcomment %}
+    var images_object = JSON.parse('{{ images_json|safe }}')
+    console.log(images_object);
+    console.log(images_object[0].fields.image);
+    console.log(images_object[0].pk);
 
     function processImage(operation) {
         var imageData = readImageDataFromDOM();
+        var imageName = extractFileName(images_object[currentImageIndex].fields.image);
+        var imageID = images_object[currentImageIndex].pk;
         var csrftoken = getCookie('csrftoken');
+        
         //updates without refreshing the page (takes about a second)
         $.ajax({
             url: '/process_image/',
@@ -282,6 +284,8 @@
                 // send the operation and the image to views.py
                 operation: operation,
                 image_data: imageData,
+                image_id: imageID,
+                image_name: imageName
                 
             },
             success: function (data) {
@@ -323,6 +327,8 @@
     function adjustImage(sliderType, sliderValue) {
         var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
+        var imageName = extractFileName(images_object[currentImageIndex].fields.image);
+        var imageID = images_object[currentImageIndex].fields.pk;
 
         $.ajax({
             url: '/process_image/',
@@ -331,7 +337,9 @@
             data: {
                 sliderType: sliderType, // Send the slider type (brightness, saturation, or sharpness)
                 sliderValue: sliderValue, // Send the slider value
-                image_data: imageData
+                image_data: imageData,
+                image_id: imageID,
+                image_name: imageName
             },
             success: function (data) {
                 $('.edited-image').attr('src', data.processed_image);
@@ -395,7 +403,8 @@
         var processedImageURL = document.querySelector(".edited-image").src;
         var downloadLink = document.createElement("a")
         downloadLink.href = processedImageURL;
-        downloadLink.download = "processed_image.jpg"
+        var imageName = extractFileName(images_object[currentImageIndex].fields.image);
+        downloadLink.download = imageName;
 
         document.body.appendChild(downloadLink);
         downloadLink.click();
