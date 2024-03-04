@@ -264,7 +264,21 @@
         {% endfor %}
     ];
 
+    function renamePreprocessedImages(images) {
+        let renamedImages = [];
+        for (let i = 0; i < images.length; i++) {
+            let filename = images[i].split('/').pop();
+            let renamedImage = "media/preprocessed_images/" + filename;
+            renamedImages.push(renamedImage);
+        }
+        return renamedImages;
+    }
+    
+    var preprocessed_images = renamePreprocessedImages(images);
+    
     var images_object = JSON.parse('{{ images_json|safe }}')
+    console.log(preprocessed_images);
+    console.log("next three lines are images_object")
     console.log(images_object);
     console.log(images_object[0].fields.image);
     console.log(images_object[0].pk);
@@ -453,7 +467,7 @@
     }
 
     function updateImageDisplay() {
-        document.querySelector('.edited-image').src = images[currentImageIndex];
+        document.querySelector('.edited-image').src = preprocessed_images[currentImageIndex];
         document.querySelector('.original-image').src = images[currentImageIndex];
         document.getElementById('file-name').textContent = extractFileName(images[currentImageIndex]);
     }

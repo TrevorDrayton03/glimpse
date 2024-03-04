@@ -157,7 +157,6 @@ def delete_image(request, image_id):
         image.delete()
 
     all_images = UploadedImage.objects.all()
-    # print(all_images)
     form = ImageUploadForm()
     context = {'form': form, 'images': all_images if all_images.exists() else []}
 
@@ -194,11 +193,10 @@ def delete_image_review(request, image_id):
 # shows the preprocess page
 @login_required(login_url='/')
 def preprocess_view(request):
-    # all_images = UploadedImage.objects.all()
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     all_images_json = serialize('json', all_images)
-    # print(all_images_json)
-    context = {'images': all_images, 'images_json': all_images_json}
+    preprocessed_images = PreprocessedImage.objects.all()
+    context = {'images': all_images, 'images_json': all_images_json, 'preprocessed_images': preprocessed_images}
     
     return render(request, 'preprocess.html', context)
 
@@ -303,6 +301,8 @@ def process_image(request):
         except UploadedImage.DoesNotExist:
             print("Image not found")
         ##################################
+        # all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
+        # print(all_images, " all_images")
         return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
     except Exception as e:
         return JsonResponse({'error': str(e)})
