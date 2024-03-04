@@ -257,31 +257,19 @@
 <script>
     // this is what saves the new image after it has been edited and replaces the old one
     var editedImageData = ''; // 'data is data:image/jpeg;base64,' followed by bytes
+    var processed_filenames;
     var currentImageIndex = 0;
     var images = [
         {% for image in images %}
             "{{ image.image.url }}",
         {% endfor %}
     ];
-
-    function renamePreprocessedImages(images) {
-        let renamedImages = [];
-        for (let i = 0; i < images.length; i++) {
-            let filename = images[i].split('/').pop();
-            let renamedImage = "media/preprocessed_images/" + filename;
-            renamedImages.push(renamedImage);
-        }
-        return renamedImages;
-    }
-    
-    var preprocessed_images = renamePreprocessedImages(images);
     
     var images_object = JSON.parse('{{ images_json|safe }}')
-    console.log(preprocessed_images);
-    console.log("next three lines are images_object")
+    {% comment %} console.log("next three lines are images_object")
     console.log(images_object);
     console.log(images_object[0].fields.image);
-    console.log(images_object[0].pk);
+    console.log(images_object[0].pk); {% endcomment %}
 
     function processImage(operation) {
         var imageData = readImageDataFromDOM();
@@ -305,6 +293,8 @@
             success: function (data) {
                 $('.edited-image').attr('src', data.processed_image);
                 editedImageData = data.processed_image;
+                processed_filenames = data.preprocessed_filenames;
+                // console.log(processed_filenames);
             },
             error: function (xhr, status, error) {
                 console.error('Error processing image:', error);
@@ -467,7 +457,7 @@
     }
 
     function updateImageDisplay() {
-        document.querySelector('.edited-image').src = preprocessed_images[currentImageIndex];
+        document.querySelector('.edited-image').src = typeof processed_filenames !== 'undefined' ? processed_filenames[currentImageIndex] : images[currentImageIndex];
         document.querySelector('.original-image').src = images[currentImageIndex];
         document.getElementById('file-name').textContent = extractFileName(images[currentImageIndex]);
     }

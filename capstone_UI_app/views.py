@@ -196,9 +196,22 @@ def preprocess_view(request):
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     all_images_json = serialize('json', all_images)
     preprocessed_images = PreprocessedImage.objects.all()
-    context = {'images': all_images, 'images_json': all_images_json, 'preprocessed_images': preprocessed_images}
+    preprocessed_filenames = get_preprocessed_image_filenames();
+    context = {'images': all_images, 'images_json': all_images_json, 'preprocessed_images': preprocessed_images, 'preprocessed_filenames': preprocessed_filenames}
     
     return render(request, 'preprocess.html', context)
+
+def get_preprocessed_image_filenames():
+    # Define the directory path
+    directory = 'media/preprocessed_images/'
+    
+    # Get a list of all files in the directory
+    files = os.listdir(directory)
+    
+    # Filter out directories and return only filenames
+    filenames = [os.path.join(directory, filename) for filename in files if os.path.isfile(os.path.join(directory, filename))]
+    
+    return filenames
 
 # processes the image based off of settings selection
 def process_image(request):
@@ -301,9 +314,8 @@ def process_image(request):
         except UploadedImage.DoesNotExist:
             print("Image not found")
         ##################################
-        # all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
-        # print(all_images, " all_images")
-        return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
+        preprocessed_filenames = get_preprocessed_image_filenames()
+        return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64, 'preprocessed_filenames': preprocessed_filenames})
     except Exception as e:
         return JsonResponse({'error': str(e)})
     
