@@ -332,7 +332,7 @@
         var imageData = readImageDataFromDOM();
         var csrftoken = getCookie('csrftoken');
         var imageName = extractFileName(images_object[currentImageIndex].fields.image);
-        var imageID = images_object[currentImageIndex].fields.pk;
+        var imageID = images_object[currentImageIndex].pk;
 
         $.ajax({
             url: '/process_image/',
@@ -401,6 +401,26 @@
         document.getElementById('brightness').value = 50;
         document.getElementById('saturation').value = 50;
         document.getElementById('sharpness').value = 50;
+
+        // 
+        var imageID = images_object[currentImageIndex].pk;
+        var csrftoken = getCookie('csrftoken');
+
+        $.ajax({
+            url: '/revert_preprocessed_image/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: {
+                image_id: imageID,
+            },
+            success: function (data) {
+                console.log(data.success, data.message, data.preprocessed_filenames);
+                preprocessed_filenames=data.preprocessed_filenames;
+            },
+            error: function (xhr, status, error) {
+                console.error('Preprocessed image overwritten failure:', error);
+            }
+        });
     }
 
     function saveToComputer() {

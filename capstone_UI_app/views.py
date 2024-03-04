@@ -319,6 +319,31 @@ def process_image(request):
     except Exception as e:
         return JsonResponse({'error': str(e)})
     
+def revert_preprocessed_image(request):
+    if request.method == 'POST':
+        image_id = request.POST.get('image_id')
+        try:
+            image = UploadedImage.objects.get(id=image_id)
+        except UploadedImage.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Image not found'})
+
+        preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+        if preprocessed_image:
+            # Save the original image over the preprocessed image
+            try:
+                # Use the filename of the preprocessed image
+                filename = os.path.basename(preprocessed_image.image.name)
+                preprocessed_image.image.save(filename, image.image.file, save=True)
+                preprocessed_filenames = get_preprocessed_image_filenames()
+                return JsonResponse({'success': True, 'message': 'Original image saved over preprocessed image', 'preprocessed_filenames': preprocessed_filenames})
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': f'Error saving image: {str(e)}'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Preprocessed image not found for the specified image'})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+    
 # Apply sigmoid correction
 def sigmoid_correction(image, alpha=10, beta=0.5):
     return 1 / (1 + np.exp(-alpha * (image / 255.0 - beta)))

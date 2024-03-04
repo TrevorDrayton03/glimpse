@@ -23,6 +23,7 @@ urlpatterns = [
     path('thankyou/',views.thankyou_view, name="thankyou"),
     path('run_inference/', views.run_inference, name='run_inference'),
     path('download_pdf/', views.download_pdf, name='download_pdf'),
+    path('revert_preprocessed_image/', views.revert_preprocessed_image, name='revert_preprocessed_image'),
 ]
 
 if settings.DEBUG:
