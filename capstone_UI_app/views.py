@@ -10,6 +10,7 @@ from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage, PreprocessedImage
 from .apps import CapstoneUiAppConfig, initialize_and_predict
 from .pdf_report import generate_pdf_report
+from django.core.files.base import ContentFile
 
 # python libraries for preprocessing
 import cv2
@@ -296,6 +297,19 @@ def process_image(request):
         
         _, buffer = cv2.imencode('.jpg', processed_image)
         processed_image_base64 = base64.b64encode(buffer).decode()
+
+        # turn the base64 string into an image
+        processed_image_base64 = base64.b64encode(buffer).decode()
+
+        # Step 1: Decode the Base64 string to get the binary content
+        image_data = base64.b64decode(processed_image_base64)
+
+        # Step 2: Create a Django ContentFile from the binary data
+        # You might want to provide a meaningful name with the correct extension for the image file
+        image_name = "processed_image.jpg"
+        image_file = ContentFile(image_data, name=image_name)
+        # model_instance.image.save(image_name, image_file, save=True)
+
         return JsonResponse({'processed_image': 'data:image/jpeg;base64,' + processed_image_base64})
     except Exception as e:
         return JsonResponse({'error': str(e)})
