@@ -37,8 +37,11 @@ def generate_pdf_report(results_data, pdf_path):
         c.drawString(350, 390, f"Prediction: {resnet_prediction}")
         c.drawString(350, 370, f"Confidence Level: {resnet_probabilities}")
         c.setFont("Helvetica", 12)
-        c.drawString(235, 680, f"Final Prediction: {final_prediction}")
-        c.drawString(235, 660, f"Confidence Level: {greater_confidence_value}")
+        c.drawString(175, 680, "Final Prediction:")
+        c.drawString(175, 660, "Confidence Level:")
+        c.drawString(325, 680, f"{final_prediction}")
+        c.drawString(325, 660, f"{greater_confidence_value}")
+
 
 
         c.showPage()
