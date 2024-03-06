@@ -120,22 +120,25 @@ def dashboard_upload_view(request):
 
     return render(request, 'dashboard_upload.html', context)
 
-@login_required(login_url='/')
-def dashboard_upload_edit_view(request):
-    all_images = UploadedImage.objects.all()
-
+@login_required(login_url="/")
+def dashboard_upload_camera_view(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_image = request.FILES['image']
+            uploaded_image = form.cleaned_data['image']
+            
             new_image = UploadedImage(image=uploaded_image)
             new_image.save()
+            
+            PreprocessedImage.objects.create(original_image=new_image, image=uploaded_image)
+    
+        all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
+        context = {'images': all_images if all_images.exists() else []}
+        # After saving the new image
+        return JsonResponse({'success': True, 'imageUrl': new_image.image.url})
     else:
-        form = ImageUploadForm()
+        return JsonResponse({'success': False, 'error': 'Invalid form submission'})
 
-    context = {'form': form, 'images': all_images if all_images.exists() else []}
-
-    return render(request, 'dashboard_upload_edit.html', context)
 
 @login_required(login_url='/')
 def delete_image(request, image_id):

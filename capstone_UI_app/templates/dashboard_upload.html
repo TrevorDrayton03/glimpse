@@ -1,19 +1,29 @@
 <div id="content">
-  <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
-    <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Cancel</button>
-  </form>
-  {% if images %}
+  <div id="camera-closed">
+    <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="button" id="capture-button">Use Camera</button>
+      <button type="submit">Upload</button>
+      <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
+    </form>
+  </div>
+  <!-- Initially hidden buttons -->
+  <div id="camera-open" style="display: none;">
+    <button type="button" id="close-camera" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click">Close Camera</button>
+    <button type="button" id="take-photo">Take Photo</button>
+    <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
+    </form>
+  </div>
+  <div id="video-container"></div> 
   <div id="uploaded-images-container" class="image-grid">
+  {% if images %}
     {% for image in images %}
       <div id="image-container-{{ image.id }}" class="grid-item">
         <img src="{{ image.image.url }}" alt="Uploaded Image">
         <button hx-post="{% url 'delete_image' image.id %}" hx-swap="outerHTML" hx-target="#content">
           Delete
         </button>
-        <!-- <pre>{{ image.id|pprint }}</pre> -->
       </div>
     {% endfor %}
   </div>  
@@ -30,4 +40,133 @@
     </button>
   </div>
   {% endif %}
+  <button id="cancel-button" style="display: none;">Close Camera</button>
 </div>
+
+<script>
+  var cameraOpen = false;
+  
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('capture-button').addEventListener('click', function() {
+  openCamera();
+});
+
+document.getElementById('close-camera').addEventListener('click', function() {
+  closeCamera();
+});
+
+function openCamera() {
+  cameraOpen = true;
+
+  // Access the camera and display the video
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function(stream) {
+      var videoContainer = document.getElementById('video-container');
+      videoContainer.innerHTML = ''; // Clear any existing video first
+      var video = document.createElement('video');
+      videoContainer.appendChild(video); // Append to the video container
+      video.srcObject = stream;
+      video.play();
+
+      var captureButton =document.getElementById('take-photo');
+      captureButton.addEventListener('click', function() {
+        capturePhoto(video);
+      });
+
+      // Show camera open interface and hide camera closed interface
+      document.getElementById('camera-open').style.display = 'block'; // Show camera-open controls
+      document.getElementById('camera-closed').style.display = 'none'; // Hide camera-closed form
+
+      // Optionally, create and show the capture button here or use the existing "Take Photo" button
+    })
+    .catch(function(error) {
+      console.error('Error accessing camera:', error);
+      cameraOpen = false;
+    });
+}
+
+function closeCamera() {
+  cameraOpen = false;
+
+  // Stop the camera stream
+  var video = document.querySelector('#video-container video');
+  if (video && video.srcObject) {
+      var stream = video.srcObject;
+      stream.getTracks().forEach(track => track.stop());
+      // Clear the video container
+      document.getElementById('video-container').innerHTML = '';
+  }
+
+  // Show camera closed interface and hide camera open interface
+  document.getElementById('camera-closed').style.display = 'block'; // Show camera-closed form
+  document.getElementById('camera-open').style.display = 'none'; // Hide camera-open controls
+}
+
+  function capturePhoto(video) {
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    var imageData = canvas.toDataURL('image/jpeg'); // Get Base64 encoded image
+
+    // Convert Base64 string to a Blob
+    fetch(imageData)
+        .then(res => res.blob())
+        .then(blob => {
+            var formData = new FormData();
+            formData.append('image', blob, 'capture.jpg'); // Append the blob as 'image' with a filename
+            uploadImage(formData); // Pass formData to the existing upload function
+        });
+}
+
+function uploadImage(formData) {
+    var csrftoken = getCookie('csrftoken');
+    $.ajax({
+        url: '/dashboard/upload/camera/',
+        type: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
+        processData: false,  // Prevent jQuery from processing the data
+        contentType: false,  // Prevent jQuery from setting the Content-Type header
+        data: formData,
+        success: function(response) {
+          if(response.success) {
+              // Create a new image element
+              var img = document.createElement('img');
+              img.src = response.imageUrl; // Set the source to the new image URL
+              img.alt = 'Uploaded Image';
+
+              // Optionally, create a container for the image
+              var div = document.createElement('div');
+              div.className = 'grid-item'; // Assuming you have styling for this
+              div.appendChild(img);
+
+              // Append the new image container to the "uploaded-images-container"
+              var container = document.getElementById('uploaded-images-container');
+              container.appendChild(div);
+          } else {
+              console.error('Error uploading image:', response.error);
+          }
+      },
+        error: function(xhr, status, error) {
+            console.error('Error uploading image:', error);
+            // Handle error response
+        }
+    });
+}
+
+</script>
