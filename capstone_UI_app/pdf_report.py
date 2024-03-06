@@ -1,52 +1,48 @@
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
 from PIL import Image
 from datetime import datetime
 import os
 
 def generate_pdf_report(results_data, pdf_path):
     c = Canvas(pdf_path, pagesize=letter)
-    total_pages = len(results_data)  # Assume you know the total number of pages ahead of time or calculate it
+    total_pages = len(results_data)
     page_number = 1
-
-    # for i in range(total_pages):
-    #     c.drawString(100, 750, f"Content for page {i + 1}")
-    #     page_num_text = f"{i + 1} / {total_pages}"
-    #     c.drawString(500, 20, page_num_text)  
-    #     c.showPage()
 
     for image_data in results_data:
         page_num_text = f"{page_number} / {total_pages}"
-        c.drawString(500, 20, page_num_text)  
+        c.drawString(500, 20, page_num_text)
         image_path_org = image_data['original_path']
         image_path_pre = image_data['processed_path']
-        # patient_id = image_data['patient_id']
-        # pre_process_steps = image_data['pre_process_steps']
-        # confidence = image_data['']
         annotated_image_path = image_data["annotated_image_path"]
+        resnet_prediction = image_data["resnet_prediction"]
+        resnet_probabilities = image_data["resnet_probabilities"]
+        final_prediction = image_data["final_prediction"]
+        greater_confidence_value = image_data["greater_confidence_value"]
 
         current_date = datetime.now().strftime("%Y-%m-%d")
 
         c.setFont("Helvetica-Bold", 14)
         c.drawString(100, 750, "GLIMPSE Report")
         c.drawString(100, 730, f"Date: {current_date}")
-        # c.drawString(100, 710, f"Patient ID: {patient_id}")
 
-        display_image_and_text(c, image_path_org, 100, 350, "Original Image")
-        display_image_and_text(c, image_path_pre, 350, 350, "Pre-Processed Image")
+        # Original, Pre-Processed, and Annotated Image display
+        display_image_and_text(c, image_path_org, 100, 600, "Original Image")
+        display_image_and_text(c, image_path_pre, 350, 600, "Pre-Processed Image")
+        display_image_and_text(c, annotated_image_path, 100, 400, "YOLOv8 Prediction")
+        c.drawString(350, 420, "ResNet18 Prediction")
 
+        # Adding ResNet Prediction and Final Prediction text
         c.setFont("Helvetica", 12)
-        # c.drawString(100, 500, f"Glaucoma Detection Confidence Level: {confidence}")
-        # c.drawString(100, 480, f"Pre-Processing Steps Added: {pre_process_steps}")
-        # c.drawImage(annotated_image_path, 100, 300, width=200, height=200)  
-        display_image_and_text(c, annotated_image_path, 100, 600, "Annotated Image")
-        
+        c.drawString(350, 390, f"Prediction: {resnet_prediction}")
+        c.drawString(350, 370, f"Confidence Level: {resnet_probabilities}")
+        c.setFont("Helvetica", 12)
+        c.drawString(235, 680, f"Final Prediction: {final_prediction}")
+        c.drawString(235, 660, f"Confidence Level: {greater_confidence_value}")
+
+
         c.showPage()
-        
         page_number += 1
-        print(annotated_image_path)
-        delete_processed_image(annotated_image_path)
 
     c.save()
 

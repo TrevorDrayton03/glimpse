@@ -371,17 +371,32 @@ def run_inference(request):
             inference_results = []
             if images.exists():  
                 for image in images:
+                    print("\nFOR RESULT #", image.id, "\n")
+                    # initialize_and_predict uses the resnet18 model
                     prediction, probabilities = initialize_and_predict(image.image.path)
-                    print(f"Predicted class: {prediction}, Probabilities: {probabilities}")
+                    max_resnet_probability = max(probabilities) if probabilities else 0
+                    print(f"RESNET::Predicted class: {prediction}, Probabilities: {probabilities}, Max probability: {max_resnet_probability}\n")
+
+                    # get images from the database
                     image_path = image.image.path
                     peprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
                     peprocessed_image_path = peprocessed_image.image.path
+                    
                     results = model([image_path])  
                     for result in results:
-                        # raw_confidences = result.probs[:, -1].cpu().numpy()
-                        # print(raw_confidences, " raw_confidences")
-                        # confidences = result.xyxy[:, 4]
-                        # print(confidences, " confidences")
+                        # compare the resnet and yolo confidence values to get the greater value
+                        yolo_confidence = result.boxes.conf.item()
+                        print(yolo_confidence, " yolo_confidence")
+                        greater_confidence_value = max(max_resnet_probability, yolo_confidence)
+                        if greater_confidence_value == max_resnet_probability:
+                            # 0 is negative, 1 is positive
+                            if(prediction == 0):
+                                final_prediction = "Negative"
+                            else:
+                                final_prediction = "Positive"
+                        else:
+                            final_prediction = result.boxes.cls.item()
+
                         annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
                         result.save(annotated_image_path)  
                         result_data = {
@@ -389,10 +404,15 @@ def run_inference(request):
                             "processed_path": peprocessed_image_path,
                             "boxes": result.boxes,
                             "annotated_image_path": annotated_image_path,
+                            "resnet_prediction": "Negative" if prediction == 0 else "Positive",
+                            "resnet_probabilities": probabilities[0] if prediction == 0 else probabilities[1],
+                            "greater_confidence_value": greater_confidence_value,
+                            "final_prediction": final_prediction
                         }
+                        # print(result.boxes, " result.boxes")
+                        # print(result.boxes.conf, " result.boxes.conf")
                         # result.show()
                         inference_results.append(result_data)
-                        print(result.boxes.conf, " result.boxes.conf")
                         
                 pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
                 generate_pdf_report(inference_results, pdf_path)
