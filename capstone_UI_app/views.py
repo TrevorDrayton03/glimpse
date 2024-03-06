@@ -374,6 +374,8 @@ def run_inference(request):
                     prediction, probabilities = initialize_and_predict(image.image.path)
                     print(f"Predicted class: {prediction}, Probabilities: {probabilities}")
                     image_path = image.image.path
+                    peprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+                    peprocessed_image_path = peprocessed_image.image.path
                     results = model([image_path])  
                     for result in results:
                         # raw_confidences = result.probs[:, -1].cpu().numpy()
@@ -384,7 +386,7 @@ def run_inference(request):
                         result.save(annotated_image_path)  
                         result_data = {
                             "original_path": image_path,
-                            "processed_path": image_path,
+                            "processed_path": peprocessed_image_path,
                             "boxes": result.boxes,
                             "annotated_image_path": annotated_image_path,
                         }

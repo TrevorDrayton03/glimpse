@@ -129,7 +129,9 @@ function closeCamera() {
         .then(res => res.blob())
         .then(blob => {
             var formData = new FormData();
-            formData.append('image', blob, 'capture.jpg'); // Append the blob as 'image' with a filename
+            var uniqueTimestamp = new Date().getTime(); // Get current timestamp
+            var uniqueFilename = 'capture_' + uniqueTimestamp + '.jpg'; // Create unique filename
+            formData.append('image', blob, uniqueFilename); // Append the blob with the unique filename
             uploadImage(formData); // Pass formData to the existing upload function
         });
 }

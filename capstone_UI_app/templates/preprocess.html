@@ -293,7 +293,7 @@
                 $('.edited-image').attr('src', data.processed_image);
                 editedImageData = data.processed_image;
                 processed_filenames = data.preprocessed_filenames;
-                // console.log(processed_filenames);
+                console.log(processed_filenames);
             },
             error: function (xhr, status, error) {
                 console.error('Error processing image:', error);
