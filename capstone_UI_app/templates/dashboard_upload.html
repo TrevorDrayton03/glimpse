@@ -1,16 +1,18 @@
 <div id="content">
   <div id="camera-closed">
-    <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="button" id="capture-button">Use Camera</button>
-      <button type="submit">Upload</button>
-      <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
-    </form>
+    <button type="button" id="capture-button" style="background-color: rgb(210, 230, 255);">Open Camera</button>
+    <div>
+      <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+        <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
+      </form>
+    </div>
   </div>
   <!-- Initially hidden buttons -->
-  <div id="camera-open" style="display: none;">
-    <button type="button" id="close-camera" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click">Close Camera</button>
+  <div id="camera-open" style="display: none; margin-bottom:15px;">
+    <button type="button" id="close-camera" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click" style="background-color: rgb(210, 230, 255)">Close Camera</button>
     <button type="button" id="take-photo">Take Photo</button>
     <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
     </form>
