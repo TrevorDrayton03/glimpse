@@ -2,7 +2,7 @@
   <div id="camera-closed">
     <button type="button" id="capture-button" style="background-color: rgb(210, 230, 255);">Open Camera</button>
     <div>
-      <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
+      <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content" class="dropzone">
         {% csrf_token %}
         {{ form.as_p }}
         {% comment %} <input type="file" name="images" id="images" multiple> {% endcomment %}

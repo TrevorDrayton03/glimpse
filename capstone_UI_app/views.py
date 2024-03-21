@@ -8,7 +8,7 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage, PreprocessedImage
-from .apps import CapstoneUiAppConfig, initialize_and_predict
+from .apps import CapstoneUiAppConfig, resnet_initialize_and_predict
 from .pdf_report import generate_pdf_report
 from django.core.files.base import ContentFile
 from django.core.serializers import serialize
@@ -260,7 +260,7 @@ def process_image(request):
         if operation == 'grayscale':
             processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         elif operation == 'labcolor':
-            processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
         elif operation == 'rgb':
             processed_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         elif operation == 'redchannel' or operation == 'bluechannel' or operation == 'greenchannel':
@@ -386,11 +386,14 @@ def run_inference(request):
             inference_results = []
             if images.exists():  
                 for image in images:
-                    print("\nFOR RESULT #", image.id, "\n")
+                    print("\nFOR RESULT # (image.id) ", image.id, "\n")
                     # initialize_and_predict uses the resnet18 model
-                    prediction, probabilities = initialize_and_predict(image.image.path)
-                    max_resnet_probability = max(probabilities) if probabilities else 0
-                    print(f"RESNET::Predicted class: {prediction}, Probabilities: {probabilities}, Max probability: {max_resnet_probability}\n")
+                    resnet_prediction, resnet_probabilities = resnet_initialize_and_predict(image.image.path)
+                    # vgg_prediction, vgg_probabilities = vgg_initialize_and_predict(image.image.path)
+                    # max_vgg_probability = max(vgg_probabilities) if vgg_probabilities else 0
+                    # print(f"VGG::Predicted class: {vgg_prediction}, Probabilities: {vgg_probabilities}\n")
+                    max_resnet_probability = max(resnet_probabilities) if resnet_probabilities else 0
+                    print(f"RESNET::Predicted class: {resnet_prediction}, Probabilities: {resnet_probabilities}, Max probability: {max_resnet_probability}\n")
 
                     # get images from the database
                     image_path = image.image.path
@@ -400,17 +403,13 @@ def run_inference(request):
                     results = model([image_path])  
                     for result in results:
                         # compare the resnet and yolo confidence values to get the greater value
-                        print(result.boxes.conf[0].item(), " yolo_confidence")
-                        print(result.boxes.conf, " yolo_confidence")
-                        if len(result.boxes.conf) == 1:
-                            yolo_confidence = result.boxes.conf.item()
-                        else:
-                            yolo_confidence = result.boxes.conf[0].item()
-                        print(yolo_confidence, " yolo_confidence")
+                        # print(result.boxes.conf, " yolo_confidence(s)")
+                        # sometimes there are multiple boxes, so we take the first one
+                        yolo_confidence = result.boxes.conf[0].item()
                         greater_confidence_value = max(max_resnet_probability, yolo_confidence)
                         if greater_confidence_value == max_resnet_probability:
                             # 0 is negative, 1 is positive
-                            if(prediction == 0):
+                            if(resnet_prediction == 0):
                                 final_prediction = "Negative"
                             else:
                                 final_prediction = "Positive"
@@ -424,14 +423,12 @@ def run_inference(request):
                             "processed_path": peprocessed_image_path,
                             "boxes": result.boxes,
                             "annotated_image_path": annotated_image_path,
-                            "resnet_prediction": "Negative" if prediction == 0 else "Positive",
-                            "resnet_probabilities": probabilities[0] if prediction == 0 else probabilities[1],
+                            "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
+                            "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
                             "greater_confidence_value": greater_confidence_value,
                             "final_prediction": final_prediction
                         }
-                        # print(result.boxes, " result.boxes")
-                        # print(result.boxes.conf, " result.boxes.conf")
-                        # result.show()
+
                         inference_results.append(result_data)
                         
                 pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')

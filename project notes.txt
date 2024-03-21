@@ -1,3 +1,10 @@
+### dealing with large files (the vgg model)
+git lfs install
+git lfs track "capstone_UI_app/vgg16_model.pth"
+git add .
+git commit -m "Add large file tracked by Git LFS"
+git push origin webcam_ensemble_report:webcam_ensemble_report
+
 ### requirements as of Feb 24th ###
 pip install ultralytics, pillow, htmx, django, reportLab, scikit-image
 ####################
