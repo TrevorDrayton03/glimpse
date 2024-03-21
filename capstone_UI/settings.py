@@ -71,6 +71,8 @@ MEDIA_URL = '/media/'
 
 WSGI_APPLICATION = 'capstone_UI.wsgi.application'
 
+DATA_UPLOAD_MAX_NUMBER_FILES = 1000  # or any other value that suits your requirements
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

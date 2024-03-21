@@ -20,30 +20,32 @@ class BillingForm(forms.Form):
     billing_province_or_territory = forms.CharField(label='Billing Province/Territory', max_length=50)
     billing_postal_code = forms.CharField(label='Billing Postal Code', max_length=10)
 
-# class RegisterForm(forms.Form):
-#     username = forms.CharField(label='Username', max_length=100)
-#     password = forms.CharField(label='Password', max_length=100)
-#     email = forms.EmailField(label='Email')
-#     first_name = forms.CharField(label='First Name', max_length=100)
-#     last_name = forms.CharField(label='Last Name', max_length=100)
-
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
 
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+    
 class ImageUploadForm(forms.Form):
-   # image = forms.ImageField(validators=[
-        # Validate file size (e.g., 2 MB)
-        #forms.FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
-        #forms.FileSizeValidator(max_size=2 * 1024 * 1024),  # 2 MB
+    # image = forms.ImageField()
 
-        # Validate image dimensions (e.g., 800x600 pixels)
-       # forms.ImageField(width_field=800, height_field=600),
-        #forms.ImageField()
-    #])
-    image = forms.ImageField()
-
+    # update to multiple image upload
+    image = MultipleFileField()
 
 class ImagePreProcessForm(forms.Form):
     image = forms.ImageField()

@@ -5,6 +5,7 @@
       <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content">
         {% csrf_token %}
         {{ form.as_p }}
+        {% comment %} <input type="file" name="images" id="images" multiple> {% endcomment %}
         <button type="submit">Upload</button>
         <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
       </form>
@@ -16,6 +17,13 @@
     <button type="button" id="take-photo">Take Photo</button>
     <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button>
     </form>
+  </div>
+  <div style="margin-top: 20px;">
+    <button 
+      style="background-color: rgb(255, 169, 169);"
+      hx-post="{% url 'delete_all_images' %}" hx-swap="outerHTML" hx-target="#content">
+      Delete All
+    </button>  
   </div>
   <div id="video-container"></div> 
   <div id="uploaded-images-container" class="image-grid">
@@ -84,7 +92,7 @@ function openCamera() {
       video.srcObject = stream;
       video.play();
 
-      var captureButton =document.getElementById('take-photo');
+      var captureButton = document.getElementById('take-photo');
       captureButton.addEventListener('click', function() {
         capturePhoto(video);
       });

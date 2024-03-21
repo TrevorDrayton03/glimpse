@@ -106,12 +106,13 @@ def dashboard_upload_view(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_image = request.FILES['image']
+            uploaded_images = request.FILES.getlist('image')  # Get list of uploaded images
             
-            new_image = UploadedImage(image=uploaded_image)
-            new_image.save()
+            for uploaded_image in uploaded_images:
+                new_image = UploadedImage(image=uploaded_image)
+                new_image.save()
 
-            PreprocessedImage.objects.create(original_image=new_image, image=uploaded_image)
+                PreprocessedImage.objects.create(original_image=new_image, image=uploaded_image)
 
     else:
         form = ImageUploadForm()
@@ -125,20 +126,14 @@ def dashboard_upload_camera_view(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_image = form.cleaned_data['image']
-            
-            new_image = UploadedImage(image=uploaded_image)
-            new_image.save()
-            
+            uploaded_image = request.FILES['image']
+            new_image = UploadedImage.objects.create(image=uploaded_image)
             PreprocessedImage.objects.create(original_image=new_image, image=uploaded_image)
-    
-        all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
-        context = {'images': all_images if all_images.exists() else []}
-        # After saving the new image
-        return JsonResponse({'success': True, 'imageUrl': new_image.image.url})
+            return JsonResponse({'success': True, 'imageUrl': new_image.image.url})
+        else:
+            return JsonResponse({'success': False, 'error': 'Form is not valid'})
     else:
-        return JsonResponse({'success': False, 'error': 'Invalid form submission'})
-
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @login_required(login_url='/')
 def delete_image(request, image_id):
@@ -158,6 +153,26 @@ def delete_image(request, image_id):
 
         # Delete the original image record from the database
         image.delete()
+
+    all_images = UploadedImage.objects.all()
+    form = ImageUploadForm()
+    context = {'form': form, 'images': all_images if all_images.exists() else []}
+
+    # Redirect back to the dashboard with images
+    return render(request, 'dashboard_upload.html', context)
+
+@login_required(login_url='/')
+def delete_all_images(request):
+    # Check if the request method is POST (only allow POST requests for deletion)
+    if request.method == 'POST':
+        all_images = UploadedImage.objects.all()
+        for image in all_images:
+            preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
+            if preprocessed_image:
+                preprocessed_image.image.delete() 
+                preprocessed_image.delete() 
+            image.image.delete()
+            image.delete()
 
     all_images = UploadedImage.objects.all()
     form = ImageUploadForm()
@@ -385,7 +400,12 @@ def run_inference(request):
                     results = model([image_path])  
                     for result in results:
                         # compare the resnet and yolo confidence values to get the greater value
-                        yolo_confidence = result.boxes.conf.item()
+                        print(result.boxes.conf[0].item(), " yolo_confidence")
+                        print(result.boxes.conf, " yolo_confidence")
+                        if len(result.boxes.conf) == 1:
+                            yolo_confidence = result.boxes.conf.item()
+                        else:
+                            yolo_confidence = result.boxes.conf[0].item()
                         print(yolo_confidence, " yolo_confidence")
                         greater_confidence_value = max(max_resnet_probability, yolo_confidence)
                         if greater_confidence_value == max_resnet_probability:

@@ -18,6 +18,7 @@ urlpatterns = [
     path('dashboard/upload/camera/', views.dashboard_upload_camera_view, name='dashboard_upload_camera'),
     path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
     path('delete_image/<int:image_id>/review', views.delete_image_review, name='delete_image_review'),
+    path('delete_all_images/', views.delete_all_images, name='delete_all_images'),
     path('preprocess/',views.preprocess_view, name="preprocess"),
     path('process_image/', views.process_image, name='process_image'),
     path('review/',views.review_view, name="review"),
