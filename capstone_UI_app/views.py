@@ -329,6 +329,7 @@ def process_image(request):
             image = UploadedImage.objects.get(id=image_id)
             preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
             preprocessed_image.image.save(image_name, ContentFile(buffer), save=True)
+            preprocessed_image.image.close() # Close the file to release the lock
         except UploadedImage.DoesNotExist:
             print("Image not found")
         ##################################
