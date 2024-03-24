@@ -9,13 +9,24 @@
         integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/htmx.org@latest/dist/htmx.js"></script> -->
     <link rel="stylesheet" type="text/css" href="{% static 'capstone_UI_app/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <header>
-        <h1><a href="/" hx-get="/?ajax=1" hx-swap="innerHTML" hx-target="#root" hx-trigger="click" style="text-decoration: none; color: inherit;">GLiMPSE</a></h1>
+        <div class="topnav-container">
+            <div class="logo-container">
+                <h1>
+                    <a href="/" hx-get="/?ajax=1" hx-swap="innerHTML" hx-target="#root" hx-trigger="click" style="text-decoration: none; color: inherit;">
+                        GLIMPSE
+                    </a>
+                </h1>
+            </div>
+            <div id="navbar">
+                {% include 'navbar.html' %}
+            </div>
+        </div>
     </header>
     <main>
         <div id="root">

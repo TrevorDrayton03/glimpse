@@ -3,6 +3,6 @@
   <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
     <button type="button" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click">Upload Images</button>
-    <button type="submit">Logout</button>
+    {% comment %} <button type="submit">Logout</button> {% endcomment %}
   </form>
 </div>

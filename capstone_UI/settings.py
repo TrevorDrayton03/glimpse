@@ -36,7 +36,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

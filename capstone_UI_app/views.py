@@ -1,7 +1,7 @@
 import os
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, FileResponse, HttpResponse
@@ -12,6 +12,7 @@ from .apps import CapstoneUiAppConfig, resnet_initialize_and_predict
 from .pdf_report import generate_pdf_report
 from django.core.files.base import ContentFile
 from django.core.serializers import serialize
+from django.http import HttpResponseRedirect
 
 # python libraries for preprocessing
 import cv2
@@ -75,23 +76,30 @@ def dashboard_view(request):
 @login_required(login_url='/')
 def custom_logout_view(request):
     logout(request)
-    return redirect('/')
+    # return redirect('/')
+    return HttpResponseRedirect('/')
+    # return render(request, 'navbar.html')
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')  
-        else:
-            error_message = 'Invalid login credentials'
-            return JsonResponse({'error': error_message})
+class CustomLogoutView(LogoutView):
+    def logout(self, request):
+        super().logout(request)
+        return HttpResponseRedirect('/')
 
-    return render(request, 'dashboard.html') 
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+        
+#         user = authenticate(request, username=username, password=password)
+        
+#         if user is not None:
+#             login(request, user)
+#             return HttpResponseRedirect('/')  # Redirect to the home page ("/") after successful login, without using AJAX
+#         else:
+#             error_message = 'Invalid login credentials'
+#             return JsonResponse({'error': error_message})
+
+#     return render(request, 'base.html')
 
 # LoginView automatically handles the authentication process
 class custom_login_view(LoginView):
@@ -234,6 +242,7 @@ def get_preprocessed_image_filenames():
 # processes the image based off of settings selection
 def process_image(request):
     scale = 2.0
+    sharpness_scale = 0.1
     image_data = request.POST.get('image_data')
     image_id = request.POST.get('image_id')
     image_name = request.POST.get('image_name')
@@ -246,6 +255,7 @@ def process_image(request):
     sliderValue = int(request.POST.get('sliderValue', 50))
 
     adjustment = (sliderValue - 50) * scale
+    sharpness_adjustment = (sliderValue - 50)* sharpness_scale
     # Decode Base64 image data
     image_bytes = base64.b64decode(image_data.split(',')[1])
 
@@ -313,9 +323,9 @@ def process_image(request):
                 final_hsv = cv2.merge((h, s, v))
                 processed_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         elif sliderType =='sharpness':
-            if adjustment != 0:
+            if sharpness_adjustment != 0:
                 sharpness_filter = np.array([[-1, -1, -1],
-                                             [-1, 9 + adjustment / 10, -1],
+                                             [-1, 9 + sharpness_adjustment / 10, -1],
                                              [-1, -1, -1]])
                 processed_image = cv2.filter2D(newImage, -1, sharpness_filter)
         else:

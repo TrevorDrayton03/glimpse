@@ -8,11 +8,11 @@
             <button onclick="location.href='/register/'">Register</button>
             <button onclick="location.href='/'">Cancel</button>
         </form> -->
-        <form id="login-form" hx-post="{% url 'login' %}" hx-swap="outerHTML" hx-target="#content">
+        <form id="login-form" action="{% url 'login' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Login</button>
-            <button hx-get="/register/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Register</button>
+            {% comment %} <button hx-get="/register/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Register</button> {% endcomment %}
             <button hx-get="/?ajax=1" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
         </form>
     </div>

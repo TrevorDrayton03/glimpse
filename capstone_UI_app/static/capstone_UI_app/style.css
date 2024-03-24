@@ -1,15 +1,16 @@
-.top-navbar {
-  background-color: #fff;
-  overflow: hidden;
-  padding: 10px;
+.topnav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+  margin: 0;
 }
-
-.top-navbar a {
-  color: #333;
-  text-align: center;
-  padding: 10px 12px;
+.logo-container {
+  margin-right: auto; 
+}
+#navbar > a {
+  margin-left: 20px; 
   text-decoration: none;
-  margin-right: 20px;
+  color: black;
 }
 
 .button-container {
@@ -56,6 +57,7 @@
 }
 
 body {
+  margin: 0 25px 0 25px;
   min-height: 95vh;
   display: flex;
   flex-direction: column;

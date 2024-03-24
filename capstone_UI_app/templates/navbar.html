@@ -1,0 +1,9 @@
+{% if user.is_authenticated %}
+<a href="#" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Dashboard</a>
+{% comment %} <a href="/logout" hx-post="/logout/?ajax=1" hx-swap="outerHTML" hx-target="#navbar" hx-trigger="click" hx-indicator="#navbar">Logout</a> {% endcomment %}
+<a href="/logout">Logout</a>
+{% else %}
+<a href="/contact" hx-get="/contact/" hx-swap="innerHTML" hx-target="#root" hx-trigger="click">Contact</a>
+<a href="/register" hx-get="/register/" hx-swap="innerHTML" hx-target="#root" hx-trigger="click">Register</a>
+<a href="/login" hx-get="/login/" hx-swap="innerHTML" hx-target="#root" hx-trigger="click" hx-indicator="#navbar">Sign In</a>
+{% endif %}
