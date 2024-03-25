@@ -147,7 +147,12 @@
 </style>
 
 <div id="content" style="text-align: center;">
+    <h2 style="text-align: left;">Preprocess</h2>
     <div>
+        {% include 'dashboard_navbar.html' %}
+      </div> 
+    <div style="margin: 20px">
+        <h3>Image: </h3>
         <p id="file-name">{{ images.0.image.name|cut:"images/" }}</p>
         <div>
             {% if images|length > 1 %}
@@ -156,15 +161,38 @@
             {% endif %}
         </div>
     </div>
+    <div>
+        <button 
+            class="preprocess-button"
+            style="background-color: rgb(169, 255, 169);" 
+            type="button" 
+            hx-get="/review" 
+            hx-trigger="click" 
+            hx-swap="outerHTML" 
+            hx-target="#content"
+            >
+            Confirm
+        </button>
+        <button 
+            class="preprocess-button"
+            type="button" 
+            hx-get="/dashboard/upload/" 
+            hx-trigger="click" 
+            hx-swap="outerHTML" 
+            hx-target="#content"
+            >
+            Go Back
+        </button>
+    </div>
     <div class="container" style="text-align: center;">
         <div class="leftside">
             <div class="preprocess">
                 <div class="edited-container">
-                    <h3>Pre-processed Fundus Image</h3>
+                    <h3>Pre-processed Image</h3>
                     <img class="edited-image" src="{{ images.0.preprocessed_image.image.url }}">
                 </div>
                 <div class="bottom-container">
-                    <h3>Original Fundus Image</h3>
+                    <h3>Original Image</h3>
                     <img class="original-image" src="{{ images.0.image.url }}">
                     <button class="revert-button preprocess-button" onClick="revertChanges()">Revert Changes</button>
                     <button class="saveToComputer preprocess-button" type="button" onClick="saveToComputer()">Save Image to
@@ -231,27 +259,6 @@
             </div>
         </div>
     </div>
-    <button 
-        class="preprocess-button"
-        style="background-color: rgb(169, 255, 169);" 
-        type="button" 
-        hx-get="/review" 
-        hx-trigger="click" 
-        hx-swap="outerHTML" 
-        hx-target="#content"
-        >
-        Confirm
-    </button>
-    <button 
-        class="preprocess-button"
-        type="button" 
-        hx-get="/dashboard/upload/" 
-        hx-trigger="click" 
-        hx-swap="outerHTML" 
-        hx-target="#content"
-        >
-        Go Back
-    </button>
 </div>
 <script>
     // this is what saves the new image after it has been edited and replaces the old one

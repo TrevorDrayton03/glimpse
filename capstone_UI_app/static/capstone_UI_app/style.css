@@ -1,3 +1,65 @@
+.navbar {
+  display: flex;
+  justify-content: left; /* Align items horizontally */
+  align-items: center; /* Align items vertically */
+}
+
+.navbar-item {
+  text-decoration: none;
+  margin: 0 5px;
+  color: black;
+}
+
+
+.arrow-pointer {
+  width: 200px;
+  height: 40px;
+  background: rgb(220, 220, 220);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-pointer:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 10px solid white;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+
+.arrow-pointer:before {
+  content: '';
+  position: absolute;
+  right: -10px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 10px solid rgb(220, 220, 220);
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+
+.active {
+  background-color:rgb(170, 170, 170);
+}
+.active:after {
+  background-color:rgb(170, 170, 170);
+  background:rgb(170, 170, 170);
+}
+.active:before {
+  border-left: 10px solid rgb(170, 170, 170);
+}
+.disabled {
+  color: #bbb; /* Greyed out text color */
+  pointer-events: none; /* Disable click events */
+}
+
 .topnav-container {
   display: flex;
   justify-content: space-between;

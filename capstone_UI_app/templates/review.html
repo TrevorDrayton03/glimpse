@@ -29,6 +29,31 @@
 </style>
 
 <div id="content">
+  <h2>Review</h2>
+  <div>
+    {% include 'dashboard_navbar.html' %}
+  </div> 
+  <div style="text-align: center; margin-top: 20px;">
+    <button
+      style="background-color: rgb(169, 255, 169);" 
+      type="button"
+      hx-post="{% url 'run_inference' %}"
+      hx-trigger="click" 
+      hx-swap="outerHTML" 
+      hx-target="#content"
+      >
+      Submit
+    </button>
+    <button
+      type="button"
+      hx-post="{% url 'preprocess' %}"
+      hx-trigger="click" 
+      hx-swap="outerHTML" 
+      hx-target="#content"
+      >
+      Go Back
+    </button>
+  </div>
   <table>
     <thead>
       <tr>
@@ -45,8 +70,8 @@
         <td><img class="review-img" src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
         <td>{{ image.image.name|cut:"images/" }}</td>
         <td>
-          <button class="remove-btn" hx-post="{% url 'delete_image_review' image.id %}"
-                  hx-swap="outerHTML" hx-target="#content">
+          <button class="remove-btn" hx-post="{% url 'delete_image_review' image_id=image.id %}?source=review"
+            hx-swap="outerHTML" hx-target="#content">
             Delete
           </button>
         </td>
@@ -54,26 +79,4 @@
       {% endfor %}
     </tbody>
   </table>
-
-  <div style="text-align: center; margin-top: 20px;">
-    <button
-      style="background-color: rgb(169, 255, 169);" 
-      type="button"
-      hx-post="{% url 'run_inference' %}"
-      hx-trigger="click" 
-      hx-swap="outerHTML" 
-      hx-target="#content"
-      >
-      Confirm
-    </button>
-    <button
-      type="button"
-      hx-post="{% url 'preprocess' %}"
-      hx-trigger="click" 
-      hx-swap="outerHTML" 
-      hx-target="#content"
-      >
-      Go Back
-    </button>
-  </div>
 </div>

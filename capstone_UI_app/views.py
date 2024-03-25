@@ -76,30 +76,21 @@ def dashboard_view(request):
 @login_required(login_url='/')
 def custom_logout_view(request):
     logout(request)
-    # return redirect('/')
+    uploaded_images = UploadedImage.objects.all()
+    for uploaded_image in uploaded_images:
+        uploaded_image.image.delete()
+        uploaded_image.delete()
+
+    preprocessed_images = PreprocessedImage.objects.all()
+    for preprocessed_image in preprocessed_images:
+        preprocessed_image.image.delete()
+        preprocessed_image.delete()
     return HttpResponseRedirect('/')
-    # return render(request, 'navbar.html')
 
 class CustomLogoutView(LogoutView):
     def logout(self, request):
         super().logout(request)
         return HttpResponseRedirect('/')
-
-# def login_view(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-        
-#         user = authenticate(request, username=username, password=password)
-        
-#         if user is not None:
-#             login(request, user)
-#             return HttpResponseRedirect('/')  # Redirect to the home page ("/") after successful login, without using AJAX
-#         else:
-#             error_message = 'Invalid login credentials'
-#             return JsonResponse({'error': error_message})
-
-#     return render(request, 'base.html')
 
 # LoginView automatically handles the authentication process
 class custom_login_view(LoginView):
@@ -110,6 +101,7 @@ class custom_login_view(LoginView):
 def dashboard_upload_view(request):
     # all_images = UploadedImage.objects.all()
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
+    active_page = 'upload'
 
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
@@ -125,7 +117,7 @@ def dashboard_upload_view(request):
     else:
         form = ImageUploadForm()
 
-    context = {'form': form, 'images': all_images if all_images.exists() else []}
+    context = {'form': form, 'images': all_images if all_images.exists() else [], 'active_page': active_page}
 
     return render(request, 'dashboard_upload.html', context)
 
@@ -146,6 +138,7 @@ def dashboard_upload_camera_view(request):
 @login_required(login_url='/')
 def delete_image(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
+
     # Check if the request method is POST (only allow POST requests for deletion)
     if request.method == 'POST':
         # Attempt to retrieve the related preprocessed image
@@ -173,6 +166,7 @@ def delete_image(request, image_id):
 def delete_all_images(request):
     # Check if the request method is POST (only allow POST requests for deletion)
     if request.method == 'POST':
+        active_page = request.GET.get('source')
         all_images = UploadedImage.objects.all()
         for image in all_images:
             preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
@@ -184,7 +178,7 @@ def delete_all_images(request):
 
     all_images = UploadedImage.objects.all()
     form = ImageUploadForm()
-    context = {'form': form, 'images': all_images if all_images.exists() else []}
+    context = {'form': form, 'images': all_images if all_images.exists() else [], 'active_page': active_page}
 
     # Redirect back to the dashboard with images
     return render(request, 'dashboard_upload.html', context)
@@ -194,6 +188,7 @@ def delete_image_review(request, image_id):
     image = get_object_or_404(UploadedImage, id=image_id)
     # Check if the request method is POST (only allow POST requests for deletion)
     if request.method == 'POST':
+        active_page = request.GET.get('source')
         # Attempt to retrieve the related preprocessed image
         preprocessed_image = PreprocessedImage.objects.filter(original_image=image).first()
         
@@ -211,19 +206,22 @@ def delete_image_review(request, image_id):
     all_images = UploadedImage.objects.all()
     # print(all_images)
     form = ImageUploadForm()
-    context = {'form': form, 'images': all_images if all_images.exists() else []}
-
+    context = {'form': form, 'images': all_images if all_images.exists() else [], 'active_page': active_page}
+    if not all_images:
+        context = {'form': form, 'images': all_images if all_images.exists() else [], 'active_page': "upload"}
+        return render(request, 'dashboard_upload.html', context)  # Return a different page
     # Redirect back to the dashboard with images
     return render(request, 'review.html', context)
 
 # shows the preprocess page
 @login_required(login_url='/')
 def preprocess_view(request):
+    active_page = 'preprocess'
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
     all_images_json = serialize('json', all_images)
     preprocessed_images = PreprocessedImage.objects.all()
     preprocessed_filenames = get_preprocessed_image_filenames();
-    context = {'images': all_images, 'images_json': all_images_json, 'preprocessed_images': preprocessed_images, 'preprocessed_filenames': preprocessed_filenames}
+    context = {'images': all_images, 'images_json': all_images_json, 'preprocessed_images': preprocessed_images, 'preprocessed_filenames': preprocessed_filenames, 'active_page': active_page}
     
     return render(request, 'preprocess.html', context)
 
@@ -384,8 +382,9 @@ def piecewise_linear(image, min_val, max_val):
 @login_required(login_url='/')
 def review_view(request):
     # all_images = UploadedImage.objects.all()
+    active_page = 'review'
     all_images = UploadedImage.objects.prefetch_related('preprocessed_image').all()
-    context = {'images': all_images}
+    context = {'images': all_images, 'active_page': active_page}
     return render(request, 'review.html', context)
 
 @login_required(login_url='/')
@@ -416,31 +415,35 @@ def run_inference(request):
                         # compare the resnet and yolo confidence values to get the greater value
                         # print(result.boxes.conf, " yolo_confidence(s)")
                         # sometimes there are multiple boxes, so we take the first one
-                        yolo_confidence = result.boxes.conf[0].item()
-                        greater_confidence_value = max(max_resnet_probability, yolo_confidence)
-                        if greater_confidence_value == max_resnet_probability:
-                            # 0 is negative, 1 is positive
-                            if(resnet_prediction == 0):
-                                final_prediction = "Negative"
+                        try:
+                            yolo_confidence = result.boxes.conf[0].item()
+                            greater_confidence_value = max(max_resnet_probability, yolo_confidence)
+                            if greater_confidence_value == max_resnet_probability:
+                                # 0 is negative, 1 is positive
+                                if(resnet_prediction == 0):
+                                    final_prediction = "Negative"
+                                else:
+                                    final_prediction = "Positive"
                             else:
-                                final_prediction = "Positive"
-                        else:
-                            final_prediction = result.boxes.cls.item()
+                                final_prediction = result.boxes.cls.item()
 
-                        annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
-                        result.save(annotated_image_path)  
-                        result_data = {
-                            "original_path": image_path,
-                            "processed_path": peprocessed_image_path,
-                            "boxes": result.boxes,
-                            "annotated_image_path": annotated_image_path,
-                            "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
-                            "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
-                            "greater_confidence_value": greater_confidence_value,
-                            "final_prediction": final_prediction
-                        }
+                            annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
+                            result.save(annotated_image_path)  
+                            result_data = {
+                                "original_path": image_path,
+                                "processed_path": peprocessed_image_path,
+                                "boxes": result.boxes,
+                                "annotated_image_path": annotated_image_path,
+                                "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
+                                "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
+                                "greater_confidence_value": greater_confidence_value,
+                                "final_prediction": final_prediction
+                            }
 
-                        inference_results.append(result_data)
+                            inference_results.append(result_data)
+                        except Exception as e:
+                            print(f"Error processing image: {str(e)}")
+                            continue
                         
                 pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
                 generate_pdf_report(inference_results, pdf_path)

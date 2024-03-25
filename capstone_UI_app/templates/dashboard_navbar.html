@@ -1,0 +1,22 @@
+<div class="navbar">
+  <div class="navbar">
+    <a href="#" class="navbar-item arrow-pointer {% if active_page == 'upload' %}active{% endif %}" hx-get="/dashboard/upload/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+      Upload
+    </a>
+    {% if images %}
+    <a href="#" class="navbar-item arrow-pointer {% if active_page == 'preprocess' %}active{% endif %}" hx-get="/preprocess/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+      Preprocess
+    </a>
+    <a href="#" class="navbar-item arrow-pointer {% if active_page == 'review' %}active{% endif %}" hx-get="/review/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+      Review
+    </a>
+    {% else %}
+    <a href="#" class="navbar-item arrow-pointer disabled {% if active_page == 'preprocess' %}active{% endif %}" hx-get="/preprocess/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+      Preprocess
+    </a>
+    <a href="#" class="navbar-item arrow-pointer disabled {% if active_page == 'review' %}active{% endif %}" hx-get="/review/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+      Review
+    </a>
+    {% endif %}
+  </div>
+</div>
