@@ -1,9 +1,7 @@
-
-
 .navbar {
   display: flex;
-  justify-content: left; /* Align items horizontally */
-  align-items: center; /* Align items vertically */
+  justify-content: left;
+  align-items: center; 
 }
 
 .navbar-item {
@@ -12,6 +10,277 @@
   color: black;
 }
 
+.thankyou-button {
+  display: inline-block; /* Switching back to inline-block for side-by-side buttons */
+  padding: 10px 20px;
+  margin: 10px; /* Space between buttons */
+  font-size: 1.5em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  width: 180px; /* Fixed width for all buttons */
+  text-align: center;
+  white-space: nowrap; /* Force the text to be on one line */
+} 
+.thankyou-logout-button {
+  display: block; /* This makes the button a block-level element */
+  width: 180px; /* Ensures width matches other buttons */
+  margin: 20px auto; /* Centers the button and adds space above */
+  background-color: black;
+}
+
+.htmx-indicator{
+  opacity:0;
+  transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator{
+  opacity:1;
+  color: white;
+}
+
+main {
+  margin-left:20px;
+}
+
+.arrow-btn {
+  font-size: 30px;
+  width: 75px;
+}
+
+.remove-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.camera-btn {
+  background-color: #3682f4;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.grey-btn {
+  background-color: #bcc0c5;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+}
+
+.leftside {
+  flex: 4;
+  display: flex;
+  justify-content: row;
+}
+
+.rightside {
+  flex: 6;
+  display: flex;
+  justify-content: row;
+  min-height: 1px; /* or another minimum height if needed */
+  padding-left: 20px;
+}
+
+#content {
+  margin-bottom:100px;
+}
+
+.container-upload {
+  display: flex;
+  flex-direction: row;
+  flex-wrap:nowrap !important;
+}
+
+.leftside-upload {
+  flex: 3;
+  display: flex;
+  justify-content: column; 
+  justify-self: stretch;
+
+}
+
+.rightside-upload {
+  flex: 7;
+  display: flex;
+  justify-content: column;
+  padding-left: 20px;
+  justify-self: stretch;
+}
+
+.edited-container {
+  display: flex;
+  align-items: left;
+  flex-direction: column;
+}
+
+.bottom-container {
+  margin-top: 20px;
+  display: flex;
+  align-items: left;
+  flex-direction: column;
+}
+
+.image-title {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+}
+
+.preprocess {
+  margin-right: 20px;
+}
+
+.original-image {
+  max-width: 480px;
+  width: 100%;
+}
+
+.edited-image {
+  width: 100%;
+  max-width: 480px;
+}
+
+.preprocess-button {
+  font-size: 20px;
+}
+
+.preprocess-button, .settings-button, .arrow-btn button:hover {
+  cursor: pointer;
+}
+
+.settings {
+  flex: 0 0 750px;
+  margin-top: 20px;
+}
+
+.settings-button {
+  background-color: lightgray;
+}
+
+.settings-button.selected {
+  background-color: darkgray;
+}
+
+.contrast-enhance {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid black;
+  padding-top: 10px;
+  margin-bottom: 200px;
+}
+
+.channel-separation {
+  border-top: 2px solid black;
+  padding-top: 10px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+  padding: 5px;
+  font-size: 18px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  padding: 5px;
+  margin-right: 5px;
+  margin-left: 15px;
+}
+
+input[type="range"] {
+  width: 250px;
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.image-color {
+  border-top: 2px solid black;
+  margin-bottom: 200px;
+  padding-top: 10px;
+}
+
+.revert-button {
+  padding-right: 20px;
+  margin-top: 10px;
+  font-size: 25px;
+}
+
+.submit-button {
+  position: absolute;
+  bottom: 150px;
+  right: 20px;
+  font-size: 25px;
+}
+
+.back-button {
+  position: absolute;
+  bottom: 150px;
+  right: 100px;
+  font-size: 25px;
+}
+
+.send-button {
+  position: absolute;
+  bottom: 50px;
+  right: 20px;
+  font-size: 25px;
+}
+
+.separation-button {
+  margin: 5px;
+  background-color: lightgray;
+}
+
+.separation-button.selected {
+  background-color: darkgray;
+}
+
+table {
+  width: 90%;
+  border-collapse: collapse;
+  text-align: center;
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 20px;
+  border: none;
+  font-size: 20px;
+}
+
+.thankyou-body {
+  text-align: center;
+  padding-top: 50px;
+  font-family: Arial, sans-serif;
+}
+.thankyou-h1 {
+  font-size: 3em;
+  margin-bottom: 0.5em;
+}
+
+.review-img {
+  width: auto; 
+  height: 150px; 
+  max-width: none; 
+}
+.filename, .action {
+  white-space: nowrap; 
+  padding: 8px 16px; 
+}
 
 .arrow-pointer {
   width: 200px;
@@ -102,7 +371,7 @@
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 200px); 
-  grid-gap: 25px; 
+  grid-gap: 15px; 
 }
 
 .grid-item {

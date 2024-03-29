@@ -4,61 +4,98 @@
     {% include 'dashboard_navbar.html' %}
   </div> 
   {% if images %}
-  <div style="margin-top: 20px;">
+  <div style="margin-top: 20px; text-align:center;">
     <button
-      style="background-color: rgb(169, 255, 169);" 
+      class="thankyou-button"
       type="button" 
       hx-get="/preprocess/" 
       hx-trigger="click" 
       hx-swap="outerHTML" 
       hx-target="#content"
       >
-      Preprocess
+      Pre-process
     </button>
   </div>
   {% endif %}
-  <div id="camera-closed" style="margin-top: 20px;">
-    <button type="button" id="capture-button" style="background-color: rgb(210, 230, 255);">Open Camera</button>
-    <div>
-      <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content" class="dropzone">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-      </form>
-    </div>
-  </div>
-  <!-- Initially hidden buttons -->
-  <div id="camera-open" style="display: none;">
-    <div>
-      <button type="button" id="close-camera" hx-target="#content" hx-get="/dashboard/upload/" hx-swap="outerHTML" hx-trigger="click" style="background-color: rgb(210, 230, 255); margin-top: 20px;">Close Camera</button>
-    </div>
-    <div style="margin-top: 20px;">
-      <button type="button" id="take-photo">Take Photo</button>
-    </div>
-  </div>
-  {% if images|length > 1 %}
-  <div style="margin-top: 20px;">
-    <button 
-      style="background-color: rgb(255, 169, 169);"
-      hx-post="{% url 'delete_all_images' %}?source=upload" hx-swap="outerHTML" hx-target="#content">
-      Delete All
-    </button>  
-  </div>
-  {% endif %}
-  <div id="video-container" style="margin-top:20px;"></div> 
-  <div id="uploaded-images-container" class="image-grid">
-  {% if images %}
-    {% for image in images %}
-      <div id="image-container-{{ image.id }}" class="grid-item">
-        <img src="{{ image.image.url }}" alt="Uploaded Image">
-        <button hx-post="{% url 'delete_image' image.id %}" hx-swap="outerHTML" hx-target="#content">
-          Delete
+  <div class="container-upload">
+    <div class="leftside-upload" style="flex-direction:column;">
+      <div id="camera-closed" style="margin-top: 20px;">
+        <button 
+          type="button" 
+          id="capture-button" 
+          class="camera-btn"
+          >
+          Open Camera
         </button>
+        <div>
+          <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content" class="dropzone">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+          </form>
+        </div>
       </div>
-    {% endfor %}
-  </div>  
-  {% endif %}
-  <button id="cancel-button" style="display: none;">Close Camera</button>
+      <!-- Initially hidden buttons -->
+      <div id="camera-open" style="display: none;">
+        <div>
+          <button 
+          type="button" 
+          id="close-camera" 
+          hx-target="#content" 
+          hx-get="/dashboard/upload/" 
+          hx-swap="outerHTML" 
+          hx-trigger="click" 
+          class="camera-btn"
+          style="margin-top: 20px;"
+          >
+          Close Camera
+        </button>
+        </div>
+        <div style="margin-top: 20px;">
+          <button 
+            type="button" 
+            id="take-photo"
+            class="thankyou-button"
+            >
+            Take Photo
+          </button>
+        </div>
+      </div>
+      {% if images|length > 1 %}
+      <div style="margin-top: 20px;">
+        <button 
+          class="remove-btn"
+          hx-post="{% url 'delete_all_images' %}?source=upload" hx-swap="outerHTML" hx-target="#content">
+          Delete All
+        </button>  
+      </div>
+      {% endif %}
+      <div id="video-container" style="margin-top:20px;"></div>  
+      <button 
+        id="cancel-button" 
+        class="camera-btn"
+        style="display: none;"
+        >
+        Close Camera
+      </button>
+    </div>
+    <div class="rightside-upload" style="flex-direction:column;">
+      <div id="uploaded-images-container" class="image-grid">
+        {% if images %}
+          {% for image in images %}
+            <div id="image-container-{{ image.id }}" class="grid-item">
+              <img src="{{ image.image.url }}" alt="Uploaded Image">
+              <button
+                class="remove-btn"
+                hx-post="{% url 'delete_image' image.id %}" hx-swap="outerHTML" hx-target="#content">
+                Delete
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div> 
+    </div>
+  </div>
 </div>
 
 <script>
@@ -96,6 +133,8 @@ function openCamera() {
       var videoContainer = document.getElementById('video-container');
       videoContainer.innerHTML = ''; // Clear any existing video first
       var video = document.createElement('video');
+      video.setAttribute('width', '480'); // Set the desired width
+      video.setAttribute('height', '360'); // Set the desired height
       videoContainer.appendChild(video); // Append to the video container
       video.srcObject = stream;
       video.play();
@@ -109,7 +148,6 @@ function openCamera() {
       document.getElementById('camera-open').style.display = 'block'; // Show camera-open controls
       document.getElementById('camera-closed').style.display = 'none'; // Hide camera-closed form
 
-      // Optionally, create and show the capture button here or use the existing "Take Photo" button
     })
     .catch(function(error) {
       console.error('Error accessing camera:', error);
