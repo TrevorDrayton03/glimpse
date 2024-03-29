@@ -18,31 +18,38 @@ def generate_pdf_report(results_data, pdf_path):
         resnet_prediction = image_data["resnet_prediction"]
         resnet_probabilities = image_data["resnet_probabilities"]
         final_prediction = image_data["final_prediction"]
-        greater_confidence_value = image_data["greater_confidence_value"]
+        greater_confidence_value = image_data["greater_confidence_value"]   
+        yolo_confidence = image_data["yolo_confidence"]
+        # eye = image_data["eye"]
+        image_name = image_data["image_name"]
 
         current_date = datetime.now().strftime("%Y-%m-%d")
+        # eye_text = "Left" if eye == 0 else "Right"
+        image_name_without_prefix = image_name.split('/')[-1]
+        yolo_confidence_percentage = round(yolo_confidence * 100)
 
         c.setFont("Helvetica-Bold", 14)
         c.drawString(100, 750, "GLIMPSE Report")
         c.drawString(100, 730, f"Date: {current_date}")
 
         # Original, Pre-Processed, and Annotated Image display
-        display_image_and_text(c, image_path_org, 100, 600, "Original Image")
-        display_image_and_text(c, image_path_pre, 350, 600, "Pre-Processed Image")
-        display_image_and_text(c, annotated_image_path, 100, 400, "YOLOv8 Prediction")
-        c.drawString(350, 420, "ResNet18 Prediction")
+        display_image_and_text(c, image_path_org, 100, 560, "Original Image")
+        display_image_and_text(c, image_path_pre, 350, 560, "Pre-Processed Image")
+        display_image_and_text(c, annotated_image_path, 100, 360, "YOLOv8")
+        # c.drawString(350, 420, "ResNet18 Prediction")
 
         # Adding ResNet Prediction and Final Prediction text
         c.setFont("Helvetica", 12)
-        c.drawString(350, 390, f"Prediction: {resnet_prediction}")
-        c.drawString(350, 370, f"Confidence Level: {resnet_probabilities}")
-        c.setFont("Helvetica", 12)
-        c.drawString(175, 680, "Final Prediction:")
+        # c.drawString(350, 390, f"Prediction: {resnet_prediction}")
+        # c.drawString(350, 370, f"Confidence Level: {resnet_probabilities}")
+        c.drawString(175, 680, "Prediction:")
         c.drawString(175, 660, "Confidence Level:")
+        c.drawString(175, 640, "File:")
+        # c.drawString(175, 620, "Eye:")
         c.drawString(325, 680, f"{final_prediction}")
-        c.drawString(325, 660, f"{greater_confidence_value}")
-
-
+        c.drawString(325, 660, f"{yolo_confidence_percentage}%")
+        c.drawString(325, 640, image_name_without_prefix)
+        # c.drawString(325, 620, eye_text)
 
         c.showPage()
         page_number += 1

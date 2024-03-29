@@ -72,13 +72,13 @@
     .contrast-enhance {
         display: flex;
         flex-direction: column;
-        border-bottom: 2px solid black;
-        padding-bottom: 10px;
+        border-top: 2px solid black;
+        padding-top: 10px;
     }
 
     .channel-separation {
-        border-bottom: 2px solid black;
-        padding-bottom: 10px;
+        border-top: 2px solid black;
+        padding-top: 10px;
     }
 
     .checkbox-row {
@@ -103,9 +103,9 @@
     }
 
     .image-color {
-        border-bottom: 2px solid black;
+        border-top: 2px solid black;
         margin-bottom: 20px;
-        padding-bottom: 10px;
+        padding-top: 40px;
     }
 
     .revert-button {
@@ -151,13 +151,15 @@
     <div>
         {% include 'dashboard_navbar.html' %}
       </div> 
-    <div style="margin: 20px">
-        <h3>Image: </h3>
-        <p id="file-name">{{ images.0.image.name|cut:"images/" }}</p>
-        <div>
+      <div style="width: 100%; display: flex; justify-content: center;">
+        <div style="margin: 20px; display: flex; align-items: center; justify-content: center; text-align: center;">
             {% if images|length > 1 %}
             <button class="preprocess-button" onclick="navigate(-1)" style="margin-right: 10px;"> ← </button>
-            <button class="preprocess-button" onclick="navigate(1)"> → </button>
+            {% endif %}
+            <h3 style="margin-right: 10px; font-weight: normal;">Image: </h3>
+            <h3 id="file-name" style="font-weight: normal;">{{ images.0.image.name|cut:"images/" }}</h3>
+            {% if images|length > 1 %}
+            <button class="preprocess-button" onclick="navigate(1)" style="margin-left: 10px;"> → </button>
             {% endif %}
         </div>
     </div>
@@ -203,20 +205,26 @@
 
         <div class="rightside">
             <div class="settings">
-                <div class="image-color">
-                    <button class="settings-button preprocess-button" id="rgb-button" onClick="selectColor('rgb', 'RGB')">RGB</button>
+                <div style="margin: 20px; display: flex; align-items: center; justify-content: center; text-align: center;">
+                    <button class="settings-button preprocess-button active-setting" id="rgb-button" onclick="toggleSettings('color', 'rgb-button')" style="margin: 5px;">Color Representation</button>
+                    <button class="settings-button preprocess-button" id="contrast-button" onClick="toggleSettings('contrast', 'contrast-button')" style="margin: 5px;">Contrast Enhancement</button>
+                    <button class="settings-button preprocess-button" id="channel-button" onClick="toggleSettings('channel', 'channel-button')" style="margin: 5px;">Color Channel Separation</button>
+                    <button class="settings-button preprocess-button" id="adjustment-button" onClick="toggleSettings('adjustment', 'adjustment-button')" style="margin: 5px;">Image Adjustment</button>
+                </div>
+                <div class="image-color" id="color-settings">
+                    <button class="settings-button preprocess-button" id="rgb-button" onClick="selectColor('rgb', 'RGB')">R↔B</button>
                     <button class="settings-button preprocess-button" id="grayscale-button"
                         onClick="selectColor('grayscale', 'Grayscale')">Grayscale</button>
                     <button class="settings-button preprocess-button" id="labcolor-button"
                         onClick="selectColor('labcolor', 'Lab Color')">Lab Color</button>
                 </div>
-                <div class="contrast-enhance">
+                <div class="contrast-enhance" id="contrast-settings" style="display: none;">
                     <h2>Contract Enhancement</h2>
                     <div class="checkbox-row">
                         <input type="checkbox" id="HE" onclick="disableCheckbox(this, 'HE')">
                         <label for="HE">Histogram Equalization</label>
-                        <input type="checkbox" id="CS" onclick="disableCheckbox(this, 'CS')">
-                        <label for="CS">Contrast Stretching</label>
+                        {% comment %} <input type="checkbox" id="CS" onclick="disableCheckbox(this, 'CS')">
+                        <label for="CS">Contrast Stretching</label> {% endcomment %}
                         <input type="checkbox" id="GC" onclick="disableCheckbox(this, 'GC')">
                         <label for="GC">Gamma Correction</label>
                     </div>
@@ -225,21 +233,21 @@
                         <label for="HE">Adaptive Histogram Equalization</label>
                         <input type="checkbox" id="SC" onclick="disableCheckbox(this, 'SC')">
                         <label for="SC">Sigmoid Correction</label>
-                        <input type="checkbox" id="LHE" onclick="disableCheckbox(this, 'LHE')">
-                        <label for="LHE">Local Histogram Equalization</label>
+                        {% comment %} <input type="checkbox" id="LHE" onclick="disableCheckbox(this, 'LHE')">
+                        <label for="LHE">Local Histogram Equalization</label> {% endcomment %}
                     </div>
                     <div class="checkbox-row">
                         <input type="checkbox" id="PLS" onclick="disableCheckbox(this, 'PLS')">
                         <label for="PLCS">Piecewise Linear Contrast Stretching</label>
                     </div>
                 </div>
-                <div class="channel-separation">
+                <div class="channel-separation" id="channel-settings" style="display: none;">
                     <h2>Color Channel Separation</h2>
                     <button class="separation-button preprocess-button" id="redchannel-button" onClick="selectChannel('redchannel', 'redchannel')">Red</button>
                     <button class="separation-button preprocess-button" id="greenchannel-button" onClick="selectChannel('greenchannel', 'greenchannel')">Green</button>
                     <button class="separation-button preprocess-button" id="bluechannel-button" onClick="selectChannel('bluechannel', 'bluechannel')">Blue</button>
                 </div>
-                <div class="image-adjustment">
+                <div class="channel-separation" id="adjustment-settings" style="display: none;">
                     <h2>Image Adjustment</h2>
                     <div>
                         <label for="brightness">Brightness:</label>
@@ -261,6 +269,33 @@
     </div>
 </div>
 <script>
+    function toggleSettings(settingsType, buttonId) {
+        // Hide all settings divs
+        document.getElementById('color-settings').style.display = 'none';
+        document.getElementById('contrast-settings').style.display = 'none';
+        document.getElementById('channel-settings').style.display = 'none';
+        document.getElementById('adjustment-settings').style.display = 'none';
+        
+        // Show the selected settings div
+        var targetSettings = document.getElementById(settingsType + '-settings');
+        if (targetSettings) {
+            targetSettings.style.display = 'block';
+        }
+    
+        // Remove active class from all buttons
+        var allButtons = document.querySelectorAll('.settings-button');
+        allButtons.forEach(function(button) {
+            button.classList.remove('active-setting');
+        });
+    
+        // Add active class to the clicked button
+        var clickedButton = document.getElementById(buttonId);
+        if (clickedButton) {
+            clickedButton.classList.add('active-setting');
+        }
+    }
+    
+    
     // this is what saves the new image after it has been edited and replaces the old one
     var editedImageData = ''; // 'data is data:image/jpeg;base64,' followed by bytes
     var processed_filenames;

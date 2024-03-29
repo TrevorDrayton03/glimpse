@@ -26,6 +26,7 @@ urlpatterns = [
     path('run_inference/', views.run_inference, name='run_inference'),
     path('download_pdf/', views.download_pdf, name='download_pdf'),
     path('revert_preprocessed_image/', views.revert_preprocessed_image, name='revert_preprocessed_image'),
+    path('update_eye_property/<int:image_id>/', views.update_eye_property, name='update_eye_property'),
 ]
 
 if settings.DEBUG:

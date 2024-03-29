@@ -429,6 +429,8 @@ def run_inference(request):
 
                             annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
                             result.save(annotated_image_path)  
+                            # eye = image.eye
+                            image_name = image.image.name
                             result_data = {
                                 "original_path": image_path,
                                 "processed_path": peprocessed_image_path,
@@ -437,7 +439,10 @@ def run_inference(request):
                                 "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
                                 "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
                                 "greater_confidence_value": greater_confidence_value,
-                                "final_prediction": final_prediction
+                                "final_prediction": final_prediction,
+                                # "eye": eye, 
+                                "image_name": image_name,
+                                "yolo_confidence": yolo_confidence,
                             }
 
                             inference_results.append(result_data)
@@ -460,3 +465,15 @@ def download_pdf(request):
     response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="GLIMPSE.pdf"'
     return response
+
+def update_eye_property(request, image_id):
+    if request.method == 'POST':
+        try:
+            image = UploadedImage.objects.get(pk=image_id)
+            image.eye = request.POST.get('eye')  # Assuming the value is passed in the request body
+            image.save()
+            return JsonResponse({'message': 'Eye property updated successfully'})
+        except UploadedImage.DoesNotExist:
+            return JsonResponse({'error': 'Image not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)

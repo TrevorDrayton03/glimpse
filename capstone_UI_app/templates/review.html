@@ -59,6 +59,7 @@
       <tr>
         <th>Uploaded Image</th>
         <th>Preprocessed Image</th>
+        {% comment %} <th>Eye</th> {% endcomment %}
         <th>Filename</th>
         <th>Action</th>
       </tr>
@@ -68,6 +69,15 @@
       <tr>
         <td><img class="review-img" src="{{ image.image.url }}" alt="Uploaded Image"></td>
         <td><img class="review-img" src="{{ image.preprocessed_image.image.url }}" alt="Preprocessed Image"></td>
+          {% comment %} <td>          
+            <button class="left-right-toggle" data-image-id="{{ image.id }}" onclick="toggleEye({{ image.id }}, {{ image.image.eye }})">
+              {% if image.image.eye == 0 %}
+                Left
+              {% else %}
+                Right
+              {% endif %}
+            </button>
+          </td>           {% endcomment %}
         <td>{{ image.image.name|cut:"images/" }}</td>
         <td>
           <button class="remove-btn" hx-post="{% url 'delete_image_review' image_id=image.id %}?source=review"
@@ -80,3 +90,27 @@
     </tbody>
   </table>
 </div>
+<script>
+  {% comment %} function toggleEye(imageId, currentEye) {
+    const newEye = currentEye === 0 ? 1 : 0;
+    fetch(`/update_eye_property/${imageId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ eye: newEye }) 
+    })
+    .then(response => {
+        if (response.ok) {
+            const button = document.querySelector(`.left-right-toggle[data-image-id="${imageId}"]`);
+            button.textContent = newEye === 0 ? 'Left' : 'Right';
+            button.setAttribute('onclick', `toggleEye(${imageId}, ${newEye})`);
+        } else {
+            console.error('Failed to update eye property');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+} {% endcomment %}
+
+</script>

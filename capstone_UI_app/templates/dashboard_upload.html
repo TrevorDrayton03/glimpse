@@ -13,7 +13,7 @@
       hx-swap="outerHTML" 
       hx-target="#content"
       >
-      Confirm
+      Preprocess
     </button>
   </div>
   {% endif %}
@@ -23,9 +23,7 @@
       <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content" class="dropzone">
         {% csrf_token %}
         {{ form.as_p }}
-        {% comment %} <input type="file" name="images" id="images" multiple> {% endcomment %}
         <button type="submit">Upload</button>
-        {% comment %} <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button> {% endcomment %}
       </form>
     </div>
   </div>
@@ -37,7 +35,6 @@
     <div style="margin-top: 20px;">
       <button type="button" id="take-photo">Take Photo</button>
     </div>
-    {% comment %} <button type="button" hx-get="/dashboard/" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">Go Back</button> {% endcomment %}
   </div>
   {% if images|length > 1 %}
   <div style="margin-top: 20px;">

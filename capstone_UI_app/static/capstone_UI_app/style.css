@@ -1,3 +1,5 @@
+
+
 .navbar {
   display: flex;
   justify-content: left; /* Align items horizontally */
@@ -54,6 +56,9 @@
 }
 .active:before {
   border-left: 10px solid rgb(170, 170, 170);
+}
+.active-setting {
+  background-color:rgb(170, 170, 170) !important; /* Change to any color you want */
 }
 .disabled {
   color: #bbb; /* Greyed out text color */
