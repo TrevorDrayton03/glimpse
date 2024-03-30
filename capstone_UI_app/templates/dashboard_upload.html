@@ -31,7 +31,7 @@
           <form method="post" enctype="multipart/form-data" hx-post="/dashboard/upload/" hx-swap="outerHTML" hx-target="#content" class="dropzone">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Upload</button>
+            <button class="main-button" type="submit">Upload</button>
           </form>
         </div>
       </div>

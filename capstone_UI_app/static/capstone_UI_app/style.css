@@ -1,13 +1,20 @@
 .navbar {
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: center; 
 }
 
 .navbar-item {
+  background-color: #156f9c;
   text-decoration: none;
   margin: 0 5px;
   color: black;
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+label {
+  font-size: 18px;
 }
 
 .thankyou-button {
@@ -48,6 +55,9 @@ main {
 .arrow-btn {
   font-size: 30px;
   width: 75px;
+  background-color:rgb(101, 145, 181);
+  color:white;
+  border-radius: 10px;
 }
 
 .remove-btn {
@@ -56,14 +66,17 @@ main {
   border: none;
   padding: 8px 16px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .camera-btn {
-  background-color: #3682f4;
+  background-color: #084d6f;
+  font-size: 15px; 
   color: white;
   border: none;
   padding: 8px 16px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .grey-btn {
@@ -93,7 +106,22 @@ main {
 }
 
 #content {
+  text-align: center;
   margin-bottom:100px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+#content h2 {
+  font-size: 28px;
+  color:#033047;
+  margin-bottom: 20px;
+
+}
+
+#content p {
+  margin-bottom: 20px;
+  color:#033047;
 }
 
 .container-upload {
@@ -154,6 +182,8 @@ main {
 
 .preprocess-button {
   font-size: 20px;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .preprocess-button, .settings-button, .arrow-btn button:hover {
@@ -163,14 +193,16 @@ main {
 .settings {
   flex: 0 0 750px;
   margin-top: 20px;
+  padding: 5px;
 }
 
 .settings-button {
-  background-color: lightgray;
+  background-color: rgb(166, 192, 213);
+  border-radius: 10px;
 }
 
 .settings-button.selected {
-  background-color: darkgray;
+  background-color: rgb(101, 145, 181);
 }
 
 .contrast-enhance {
@@ -242,11 +274,12 @@ input[type="range"] {
 
 .separation-button {
   margin: 5px;
-  background-color: lightgray;
+  background-color: rgb(166, 192, 213);
+  padding: 5px;
 }
 
 .separation-button.selected {
-  background-color: darkgray;
+  background-color: rgb(97, 127, 152);
 }
 
 table {
@@ -285,49 +318,55 @@ th, td {
 .arrow-pointer {
   width: 200px;
   height: 40px;
-  background: rgb(220, 220, 220);
+  background: rgb(203, 135, 9);
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgb(224, 178, 129);
+  color: rgb(9, 9, 9);
+
 }
 
+/* tip of arrow */
 .arrow-pointer:after {
   content: '';
   position: absolute;
+  right: -1px;
   left: 0;
   bottom: 0;
   width: 0;
   height: 0;
-  border-left: 10px solid white;
+  border-left: 10px solid #c9e3f8;
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
 }
 
+/* back of arrow */
 .arrow-pointer:before {
   content: '';
   position: absolute;
-  right: -10px;
+  right: -9px;
   bottom: 0;
   width: 0;
   height: 0;
-  border-left: 10px solid rgb(220, 220, 220);
+  border-left: 10px solid rgb(224, 178, 129);
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
 }
 
 .active {
-  background-color:rgb(170, 170, 170);
+  background-color: rgb(203, 135, 9);
 }
 .active:after {
-  background-color:rgb(170, 170, 170);
-  background:rgb(170, 170, 170);
+  background-color:rgb(203, 135, 9);
+  background:rgb(203, 135, 9);
 }
 .active:before {
-  border-left: 10px solid rgb(170, 170, 170);
+  border-left: 10px solid rgb(203, 135, 9);
 }
 .active-setting {
-  background-color:rgb(170, 170, 170) !important; /* Change to any color you want */
+  background-color:rgb(101, 145, 181) !important; /* Change to any color you want */
 }
 .disabled {
   color: #bbb; /* Greyed out text color */
@@ -351,6 +390,21 @@ th, td {
 
 .button-container {
   display: flex;
+  text-align: left;
+}
+
+.main-button{
+  font-size: 15px;
+  background-color:#084d6f;
+  color:white;
+  border-radius: 10px;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.main-button:hover {
+  background-color:#033047;
+  color:white;
 }
 
 .button {
@@ -393,13 +447,53 @@ th, td {
 }
 
 body {
+  background-color: #c9e3f8;
+  color: #030224;
   margin: 0 25px 0 25px;
   min-height: 95vh;
   display: flex;
   flex-direction: column;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+  background-color: #156f9c; /* Dark blue color for the header */
+  color: rgb(3, 1, 11); /* White text color for better contrast */
+  padding: 10px 30px;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 footer {
   margin-top: auto;
   text-align: center;
+}
+
+.medical-section {
+  background-color: #f4f7f9; /* Light blue background */
+  padding: 50px 0; /* Add some padding for better readability */
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.welcome-section, .description-section {
+  margin-bottom: 30px;
+}
+
+.welcome-section h2, .description-section h3 {
+  color: #005580; /* Dark blue heading color */
+}
+
+.welcome-section p, .description-section p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.description-section {
+  border-top: 1px solid #ccc; /* Add a subtle border between sections */
+  padding-top: 20px;
 }

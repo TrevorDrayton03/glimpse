@@ -11,9 +11,9 @@
         <form id="login-form" action="{% url 'login' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Login</button>
+            <button class="main-button" type="submit">Login</button>
             {% comment %} <button hx-get="/register/" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Register</button> {% endcomment %}
-            <button hx-get="/?ajax=1" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
+            <button class="main-button" hx-get="/?ajax=1" hx-swap="outerHTML" hx-trigger="click" hx-target="#content">Cancel</button>
         </form>
     </div>
 </div>

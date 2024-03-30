@@ -4,8 +4,8 @@
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Submit</button>
-      <button type="button" onclick="location.href='/'">Cancel</button>
+      <button class="main-button" type="submit">Submit</button>
+      <button class="main-button" type="button" onclick="location.href='/'">Cancel</button>
     </form>
   </div>
 </div>
