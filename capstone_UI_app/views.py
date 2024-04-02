@@ -175,6 +175,23 @@ def delete_all_images(request):
                 preprocessed_image.delete() 
             image.image.delete()
             image.delete()
+    
+        directory1 = 'media/preprocessed_images/'
+        for filename in os.listdir(directory1):
+            file_path = os.path.join(directory1, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"Error deleting file: {file_path}, {e}")
+        directory2 = 'media/images/'
+        for filename in os.listdir(directory2):
+            file_path = os.path.join(directory2, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"Error deleting file: {file_path}, {e}")
 
     all_images = UploadedImage.objects.all()
     form = ImageUploadForm()
@@ -398,12 +415,12 @@ def run_inference(request):
                 for image in images:
                     print("\nFOR RESULT # (image.id) ", image.id, "\n")
                     # initialize_and_predict uses the resnet18 model
-                    resnet_prediction, resnet_probabilities = resnet_initialize_and_predict(image.image.path)
+                    # resnet_prediction, resnet_probabilities = resnet_initialize_and_predict(image.image.path)
                     # vgg_prediction, vgg_probabilities = vgg_initialize_and_predict(image.image.path)
                     # max_vgg_probability = max(vgg_probabilities) if vgg_probabilities else 0
                     # print(f"VGG::Predicted class: {vgg_prediction}, Probabilities: {vgg_probabilities}\n")
-                    max_resnet_probability = max(resnet_probabilities) if resnet_probabilities else 0
-                    print(f"RESNET::Predicted class: {resnet_prediction}, Probabilities: {resnet_probabilities}, Max probability: {max_resnet_probability}\n")
+                    # max_resnet_probability = max(resnet_probabilities) if resnet_probabilities else 0
+                    # print(f"RESNET::Predicted class: {resnet_prediction}, Probabilities: {resnet_probabilities}, Max probability: {max_resnet_probability}\n")
 
                     # get images from the database
                     image_path = image.image.path
@@ -417,15 +434,21 @@ def run_inference(request):
                         # sometimes there are multiple boxes, so we take the first one
                         try:
                             yolo_confidence = result.boxes.conf[0].item()
-                            greater_confidence_value = max(max_resnet_probability, yolo_confidence)
-                            if greater_confidence_value == max_resnet_probability:
-                                # 0 is negative, 1 is positive
-                                if(resnet_prediction == 0):
-                                    final_prediction = "Negative"
-                                else:
-                                    final_prediction = "Positive"
+                            # greater_confidence_value = max(max_resnet_probability, yolo_confidence)
+                            # if greater_confidence_value == max_resnet_probability:
+                            #     # 0 is negative, 1 is positive
+                            #     if(resnet_prediction == 0):
+                            #         final_prediction = "Negative"
+                            #     else:
+                            #         final_prediction = "Positive"
+                            # else:
+                            #     final_prediction = result.boxes.cls.item()
+
+                            final_prediction = result.boxes.cls.item()
+                            if final_prediction == 0:
+                                final_prediction = "Negative"
                             else:
-                                final_prediction = result.boxes.cls.item()
+                                final_prediction = "Positive"
 
                             annotated_image_path = image_path.replace('.jpg', '_annotated.jpg')
                             result.save(annotated_image_path)  
@@ -436,9 +459,9 @@ def run_inference(request):
                                 "processed_path": peprocessed_image_path,
                                 "boxes": result.boxes,
                                 "annotated_image_path": annotated_image_path,
-                                "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
-                                "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
-                                "greater_confidence_value": greater_confidence_value,
+                                # "resnet_prediction": "Negative" if resnet_prediction == 0 else "Positive",
+                                # "resnet_probabilities": resnet_probabilities[0] if resnet_prediction == 0 else resnet_probabilities[1],
+                                # "greater_confidence_value": greater_confidence_value,
                                 "final_prediction": final_prediction,
                                 # "eye": eye, 
                                 "image_name": image_name,
@@ -452,6 +475,25 @@ def run_inference(request):
                         
                 pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
                 generate_pdf_report(inference_results, pdf_path)
+                # delete the annotated images that were generated
+                directory1 = 'media/preprocessed_images/'
+                for filename in os.listdir(directory1):
+                    if "_annotated" in filename:
+                        file_path = os.path.join(directory1, filename)
+                        try:
+                            if os.path.isfile(file_path):
+                                os.remove(file_path)
+                        except Exception as e:
+                            print(f"Error deleting file: {file_path}, {e}")
+                directory2 = 'media/images/'
+                for filename in os.listdir(directory2):
+                    if "_annotated" in filename:
+                        file_path = os.path.join(directory2, filename)
+                        try:
+                            if os.path.isfile(file_path):
+                                os.remove(file_path)
+                        except Exception as e:
+                            print(f"Error deleting file: {file_path}, {e}")
                 return render(request, 'thankyou.html')
             else:
                 return HttpResponse("No images found for inference.")
