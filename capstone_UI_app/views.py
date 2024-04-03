@@ -9,7 +9,7 @@ from django.conf import settings
 from .forms import ContactForm, BillingForm, RegisterForm, ImageUploadForm
 from .models import UploadedImage, PreprocessedImage
 from .apps import CapstoneUiAppConfig, resnet_initialize_and_predict
-from .pdf_report import generate_pdf_report
+from .pdf_report import generate_pdf_report, generate_dicom_from_pdf
 from django.core.files.base import ContentFile
 from django.core.serializers import serialize
 from django.http import HttpResponseRedirect
@@ -503,10 +503,26 @@ def run_inference(request):
         return HttpResponse("This endpoint expects a POST request.")
 
 def download_pdf(request):
+    # Get the format from the query parameters, default to 'pdf' if not provided
+    format = request.GET.get('format', 'pdf')
     pdf_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.pdf')
-    response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="GLIMPSE.pdf"'
+
+    if format == 'pdf':
+        # If the format is PDF, serve the PDF file
+        response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="GLIMPSE.pdf"'
+    elif format == 'dicom':
+        # Generate DICOM from PDF (assuming generate_dicom_from_pdf() is implemented)
+        dicom_path = os.path.join(settings.BASE_DIR, 'GLIMPSE.dcm')  # Specify DICOM file path
+        dicom_ds = generate_dicom_from_pdf(pdf_path)  # Assume this function generates DICOM and returns a dataset
+        dicom_ds.save_as(dicom_path)  # Save the DICOM dataset to a file
+
+        # Serve the DICOM file
+        response = FileResponse(open(dicom_path, 'rb'), content_type='application/dicom')
+        response['Content-Disposition'] = 'attachment; filename="GLIMPSE.dcm"'
+
     return response
+
 
 def update_eye_property(request, image_id):
     if request.method == 'POST':

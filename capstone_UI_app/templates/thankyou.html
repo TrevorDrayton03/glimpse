@@ -1,17 +1,29 @@
-<div class="thankyou-body" id="content">
-  <h1 class="thankyou-h1">Thank You</h1>
-  <div >
-    <a href="{% url 'download_pdf' %}" class="thankyou-button">Download PDF</a>
-    <button
-      type="button"
-      class="thankyou-button"
-      hx-get="{% url 'dashboard_upload' %}"
-      hx-trigger="click" 
-      hx-swap="outerHTML" 
-      hx-target="#content"
-      >
-      Upload Again
-    </button>
+<script>
+  function updateDownloadLink() {
+      var format = document.querySelector('input[name="format"]:checked').value;
+      var downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = `{% url 'download_pdf' %}?format=` + format;
+  }
+  </script>
+  
+  <div class="thankyou-body" id="content">
+      <h1 class="thankyou-h1">Thank You</h1>
+      <div style="text-align:center;">
+          <p>Select the format to download:</p>
+          <input type="radio" id="pdf" name="format" value="pdf" checked onchange="updateDownloadLink()">
+          <label for="pdf">PDF</label><br>
+          
+          <input type="radio" id="dicom" name="format" value="dicom" onchange="updateDownloadLink()">
+          <label for="dicom">DCM</label><br>
+          <div>
+              <a href="" id="downloadLink" class="thankyou-button" onclick="updateDownloadLink()">Download</a>
+              <button type="button" class="thankyou-button" hx-get="{% url 'dashboard_upload' %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#content">
+                  Upload Again
+              </button>
+          </div>
+          <a href="/logout" class="thankyou-button thankyou-logout-button">Logout</a>
+      </div>
   </div>
-  <a href="/logout" class="thankyou-button thankyou-logout-button">Logout</a>
-</div>
+  
+  <script>updateDownloadLink();</script>
+  
