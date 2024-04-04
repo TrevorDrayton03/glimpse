@@ -11,6 +11,7 @@
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+    <p>Verification Code: <input type="text"></p>
     <button class="main-button" type="submit">Submit</button>
     <button class="main-button" type="button" onclick="location.href='/'">Cancel</button>
   </form>
