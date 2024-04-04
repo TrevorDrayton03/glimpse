@@ -294,6 +294,7 @@ def process_image(request):
             gamma = 1.5
             processed_image = np.uint8(((image / 255.0) ** gamma) * 255)
         elif operation == 'AHE':
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
             processed_image = clahe.apply(image)
         elif operation == 'SC':
@@ -301,8 +302,12 @@ def process_image(request):
         elif operation == 'LHE':
             processed_image = exposure.equalize_adapthist(image, clip_limit=0.03)
         elif operation == 'PLS':
-            min_val, max_val = 50, 200
-            processed_image = piecewise_linear(image, min_val, max_val)
+            lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+            l_channel, a_channel, b_channel = cv2.split(lab_image)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            clahe_l_channel = clahe.apply(l_channel)
+            enhanced_lab_image = cv2.merge((clahe_l_channel, a_channel, b_channel))
+            processed_image = cv2.cvtColor(enhanced_lab_image, cv2.COLOR_LAB2BGR)
         elif sliderType == 'brightness':
             # print(adjustment)
             if adjustment != 0:
